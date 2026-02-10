@@ -1,7 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="16.0.0" />
+    <PackageReference Include="FluentValidation" Version="12.1.1" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Accounting.Domain\Accounting.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Abstractions\Persistence\" />
+    <Folder Include="Abstractions\Auth\" />
+    <Folder Include="Abstractions\Messaging\" />
+    <Folder Include="Common\Models\" />
+    <Folder Include="Common\Mapping\" />
+    <Folder Include="Features\Services\" />
+    <Folder Include="Features\ClientRequests\" />
+    <Folder Include="Features\Auth\" />
   </ItemGroup>
 
   <PropertyGroup>

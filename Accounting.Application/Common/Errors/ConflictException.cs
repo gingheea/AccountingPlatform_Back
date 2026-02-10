@@ -1,0 +1,6 @@
+﻿namespace Accounting.Application.Common.Errors;
+
+public class ConflictException : Exception
+{
+    public ConflictException(string message) : base(message) { }
+}
