@@ -1,5 +1,6 @@
 using Accounting.Api.Middlewares;
 using Accounting.Infrastructure;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,8 +21,17 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseAuthentication();
-app.UseAuthorization();
+//app.UseAuthentication();
+//app.UseAuthorization();
 
-app.MapControllers();
+try
+{
+    app.MapControllers();
+}
+catch (ReflectionTypeLoadException ex)
+{
+    foreach (var e in ex.LoaderExceptions)
+        Console.WriteLine(e?.ToString());
+    throw;
+}
 app.Run();

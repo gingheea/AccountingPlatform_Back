@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Accounting.Application.Abstractions.Auth;
 
 namespace Accounting.Infrastructure;
 
@@ -23,7 +24,10 @@ public static class DependencyInjection
         })
         .AddRoles<IdentityRole<Guid>>()
         .AddEntityFrameworkStores<AppDbContext>()
-        .AddSignInManager();
+        .AddSignInManager<SignInManager<AppUser>>();
+
+        services.Configure<JwtOptions>(config.GetSection("Jwt"));
+        services.AddScoped<IJwtTokenService, JwtTokenService>();
 
         return services;
     }
