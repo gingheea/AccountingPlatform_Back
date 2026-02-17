@@ -1,4 +1,5 @@
 using Accounting.Api.Middlewares;
+using Accounting.Application;
 using Accounting.Infrastructure;
 using Accounting.Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -12,7 +13,7 @@ builder.Services.AddTransient<ExceptionHandlingMiddleware>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
 
