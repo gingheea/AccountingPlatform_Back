@@ -27,6 +27,7 @@
     <Folder Include="Contracts\Services\" />
     <Folder Include="Contracts\ClientRequests\" />
     <Folder Include="Contracts\Auth\" />
+    <Folder Include="Controllers\" />
     <Folder Include="Extensions\" />
   </ItemGroup>
 
