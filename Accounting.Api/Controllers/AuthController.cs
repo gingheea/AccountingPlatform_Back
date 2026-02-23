@@ -1,5 +1,5 @@
 ﻿using Accounting.Api.Contracts.Auth;
-using Accounting.Application.Features.Auth.Login;
+using Login = Accounting.Application.Features.Auth.Login;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,7 +19,7 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<ActionResult<AuthResponse>> Login(LoginRequest request, CancellationToken ct)
     {
-        var result = await _mediator.Send(new Command(request.Email, request.Password), ct);
+        var result = await _mediator.Send(new Login.Command(request.Email, request.Password), ct);
         return Ok(new AuthResponse(result.AccessToken));
     }
 }
