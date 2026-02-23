@@ -21,7 +21,7 @@ public sealed class IdentitySeeder
 
     public async Task SeedAsync()
     {
-        const string adminRole = "Admin";
+        const string adminRole = Roles.Admin;
         const string adminEmail = "admin@accounting.local";
         const string adminPassword = "Admin1234!";
 
