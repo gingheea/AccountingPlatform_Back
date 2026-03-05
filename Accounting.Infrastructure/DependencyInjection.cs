@@ -1,10 +1,12 @@
-﻿using Accounting.Infrastructure.Identity;
+﻿using Accounting.Application.Abstractions.Auth;
+using Accounting.Application.Abstractions.Persistence;
+using Accounting.Infrastructure.Identity;
 using Accounting.Infrastructure.Persistence;
+using Accounting.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Accounting.Application.Abstractions.Auth;
 
 namespace Accounting.Infrastructure;
 
@@ -30,6 +32,8 @@ public static class DependencyInjection
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IdentitySeeder>();
         services.AddScoped<IIdentityAuthService, IdentityAuthService>();
+        services.AddScoped<IServiceRepository, ServiceRepository>();
+        services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<AppDbContext>());
 
         return services;
     }

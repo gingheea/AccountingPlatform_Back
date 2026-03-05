@@ -1,4 +1,6 @@
-﻿using Accounting.Infrastructure.Identity;
+﻿using Accounting.Application.Abstractions.Persistence;
+using Accounting.Domain.Entities;
+using Accounting.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -10,17 +12,20 @@ using System.Threading.Tasks;
 
 namespace Accounting.Infrastructure.Persistence
 {
-    internal class AppDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>
+    internal class AppDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>, IUnitOfWork
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-        //public DbSet<Service> Services => Set<Service>();
+        public DbSet<Service> Services => Set<Service>();
+
         //public DbSet<ClientRequest> ClientRequests => Set<ClientRequest>();
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            // пізніше: builder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+
+            builder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+
         }
     }
 }

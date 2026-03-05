@@ -12,6 +12,7 @@
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
     <PackageReference Include="MediatR" Version="14.0.0" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.24" />
   </ItemGroup>
 
   <ItemGroup>
@@ -19,11 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Abstractions\Persistence\" />
     <Folder Include="Abstractions\Messaging\" />
     <Folder Include="Common\Models\" />
     <Folder Include="Common\Mapping\" />
-    <Folder Include="Features\Services\" />
     <Folder Include="Features\ClientRequests\" />
   </ItemGroup>
 
