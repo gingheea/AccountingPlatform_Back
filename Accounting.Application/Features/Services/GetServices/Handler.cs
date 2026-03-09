@@ -1,4 +1,5 @@
 ﻿using Accounting.Application.Abstractions.Persistence;
+using Accounting.Application.Features.Services.Common;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -7,9 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Accounting.Application.Features.Services
+namespace Accounting.Application.Features.Services.List
 {
-    public sealed class Handler : IRequestHandler<Query, IReadOnlyList<ServiceDto>>
+    public sealed class Handler : IRequestHandler<GetListServicesQuery, IReadOnlyList<ServiceDto>>
     {
         public readonly IServiceRepository _serviceRepository;
 
@@ -18,7 +19,7 @@ namespace Accounting.Application.Features.Services
             _serviceRepository = serviceRepository;
         }
 
-        public async Task<IReadOnlyList<ServiceDto>> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<IReadOnlyList<ServiceDto>> Handle(GetListServicesQuery request, CancellationToken cancellationToken)
         {
             return await _serviceRepository.Query()
            .AsNoTracking()

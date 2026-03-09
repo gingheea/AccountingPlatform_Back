@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Accounting.Application.Features.Services.List
+namespace Accounting.Application.Features.Services.Common
 {
     public sealed record ServiceDto(
     Guid Id,
