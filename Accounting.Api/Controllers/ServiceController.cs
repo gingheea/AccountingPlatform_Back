@@ -1,4 +1,4 @@
-﻿using Accounting.Api.Contracts.ClientRequests;
+﻿using Accounting.Api.Contracts;
 using Accounting.Api.Contracts.Services;
 using Accounting.Application.Features.Services.Common;
 using Accounting.Application.Features.Services.CreateService;
