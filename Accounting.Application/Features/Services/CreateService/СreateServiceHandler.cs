@@ -5,12 +5,12 @@ using MediatR;
 
 namespace Accounting.Application.Features.Services.Create;
 
-public sealed class Handler : IRequestHandler<CreateServiceCommand, Guid>
+public sealed class СreateServiceHandler : IRequestHandler<CreateServiceCommand, Guid>
 {
     private readonly IServiceRepository _serviceRepository;
     private readonly IUnitOfWork _unitOfWork;
 
-    public Handler(IServiceRepository serviceRepository, IUnitOfWork unitOfWork)
+    public СreateServiceHandler(IServiceRepository serviceRepository, IUnitOfWork unitOfWork)
     {
         _serviceRepository = serviceRepository;
         _unitOfWork = unitOfWork;

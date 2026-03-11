@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace Accounting.Application.Features.Services.Get
 {
-    public sealed class Handler : IRequestHandler<GetServiceQuery, ServiceDto>
+    public sealed class GetServiceByIdHandler : IRequestHandler<GetServiceQuery, ServiceDto>
     {
         public readonly IServiceRepository _serviceRepository;
 
-        public Handler(IServiceRepository serviceRepository)
+        public GetServiceByIdHandler(IServiceRepository serviceRepository)
         {
             _serviceRepository = serviceRepository;
         }

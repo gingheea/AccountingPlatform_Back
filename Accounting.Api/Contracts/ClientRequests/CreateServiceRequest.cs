@@ -1,4 +1,4 @@
-﻿namespace Accounting.Api.Contracts.Services;
+﻿namespace Accounting.Api.Contracts.ClientRequests;
 
 public sealed record CreateServiceRequest(
     string Name,

@@ -22,6 +22,12 @@ namespace Accounting.Infrastructure.Repositories
         public Task<Service?> GetByIdAsync(Guid id, CancellationToken ct)
             => _dbContext.Services.FirstOrDefaultAsync(s => s.Id == id, ct);
 
+        public Task UpdateAsync(Service service, CancellationToken ct)
+        {
+            _dbContext.Services.Update(service);
+            return Task.CompletedTask;
+        }
+
         public IQueryable<Service> Query() => _dbContext.Services.AsQueryable();
 
         public void Remove(Service service)
