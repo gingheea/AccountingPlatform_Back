@@ -1,6 +1,7 @@
 ﻿using Accounting.Api.Contracts.ClientRequests;
 using Accounting.Application.Features.Services.Common;
 using Accounting.Application.Features.Services.CreateService;
+using Accounting.Application.Features.Services.DeactivateService;
 using Accounting.Application.Features.Services.Get;
 using Accounting.Application.Features.Services.List;
 using Accounting.Application.Features.Services.UpdateService;
@@ -110,6 +111,18 @@ public sealed class ServicesController : ControllerBase
             ct);
 
         _logger.LogInformation("Service updated with id: {ServiceId}", id);
+        return NoContent();
+    }
+
+    [HttpPatch("{id:guid}/deactivate")]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Deactivate(Guid id, CancellationToken ct)
+    {
+        await _mediator.Send(new DeactivateCommand(id), ct);
         return NoContent();
     }
 }
