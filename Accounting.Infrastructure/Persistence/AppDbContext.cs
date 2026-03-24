@@ -18,7 +18,7 @@ namespace Accounting.Infrastructure.Persistence
 
         public DbSet<Service> Services => Set<Service>();
 
-        //public DbSet<ClientRequest> ClientRequests => Set<ClientRequest>();
+        public DbSet<ClientRequest> ClientRequests => Set<ClientRequest>();
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

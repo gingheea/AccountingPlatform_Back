@@ -33,6 +33,7 @@ public static class DependencyInjection
         services.AddScoped<IdentitySeeder>();
         services.AddScoped<IIdentityAuthService, IdentityAuthService>();
         services.AddScoped<IServiceRepository, ServiceRepository>();
+        services.AddScoped<IClientRequestRepository, ClientRequestRepository>();
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<AppDbContext>());
 
         return services;

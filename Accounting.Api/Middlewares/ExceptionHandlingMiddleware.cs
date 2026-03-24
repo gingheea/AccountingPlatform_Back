@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Text.Json;
 using Accounting.Application.Common.Errors;
+using Accounting.Domain.Exceptions;
 using FluentValidation;
 
 namespace Accounting.Api.Middlewares;
@@ -70,6 +71,16 @@ public class ExceptionHandlingMiddleware : IMiddleware
                 type = "conflict",
                 title = ex.Message,
                 status = 409
+            });
+        }
+        catch (DomainException ex)
+        {
+            _logger.LogWarning(ex, "Domain error");
+            await WriteResponse(context, HttpStatusCode.BadRequest, new
+            {
+                type = "domain_error",
+                title = ex.Message,
+                status = 400
             });
         }
         catch (Exception ex)

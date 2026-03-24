@@ -31,7 +31,6 @@ namespace Accounting.Application.Features.Services.DeactivateService
 
             service.Deactivate();
 
-            await _serviceRepository.UpdateAsync(service, ct);
             await _unitOfWork.SaveChangesAsync(ct);
         }
     }

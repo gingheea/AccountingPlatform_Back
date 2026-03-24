@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Contracts\Services\" />
+    <Folder Include="Contracts\ClientRequests\" />
     <Folder Include="Extensions\" />
   </ItemGroup>
 

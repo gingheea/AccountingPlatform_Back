@@ -1,4 +1,6 @@
-﻿namespace Accounting.Domain.Entities;
+﻿using Accounting.Domain.Exceptions;
+
+namespace Accounting.Domain.Entities;
 
 public sealed class Service
 {
@@ -45,10 +47,10 @@ public sealed class Service
         name = name?.Trim() ?? string.Empty;
 
         if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("Service name is required.", nameof(name));
+            throw new DomainException("Service name is required.");
 
         if (name.Length > 200)
-            throw new ArgumentException("Service name max length is 200.", nameof(name));
+            throw new DomainException("Service name max length is 200.");
 
         Name = name;
     }
@@ -56,7 +58,7 @@ public sealed class Service
     private void SetPrice(decimal price)
     {
         if (price < 0)
-            throw new ArgumentException("Price cannot be negative.", nameof(price));
+            throw new DomainException("Price cannot be negative.");
 
         Price = price;
     }
@@ -64,7 +66,7 @@ public sealed class Service
     private void SetDescription(string? description)
     {
         if (description is not null && description.Length > 2000)
-            throw new ArgumentException("Description max length is 2000.", nameof(description));
+            throw new DomainException("Description max length is 2000.");
 
         Description = string.IsNullOrWhiteSpace(description) ? null : description.Trim();
     }

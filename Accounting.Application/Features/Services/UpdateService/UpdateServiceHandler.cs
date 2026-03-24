@@ -29,7 +29,7 @@ namespace Accounting.Application.Features.Services.UpdateService
             }
 
             service.Update(request.Name, request.Price, request.Description, request.IsActive, request.SortOrder);
-            await _serviceRepository.UpdateAsync(service, ct);
+            await _serviceRepository.Update(service);
             await _unitOfWork.SaveChangesAsync(ct);
         }
     }

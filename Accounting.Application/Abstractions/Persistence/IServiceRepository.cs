@@ -6,7 +6,7 @@ public interface IServiceRepository
 {
     Task<Service?> GetByIdAsync(Guid id, CancellationToken ct);
     Task AddAsync(Service service, CancellationToken ct);
-    Task UpdateAsync(Service service, CancellationToken ct);
+    Task Update(Service service);
     void Remove(Service service);
 
     IQueryable<Service> Query();

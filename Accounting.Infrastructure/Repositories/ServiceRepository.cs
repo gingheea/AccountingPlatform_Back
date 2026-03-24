@@ -16,19 +16,20 @@ namespace Accounting.Infrastructure.Repositories
 
         public ServiceRepository(AppDbContext dbContext) => _dbContext = dbContext;
 
-        public Task AddAsync(Service service, CancellationToken ct)
-        => _dbContext.Services.AddAsync(service, ct).AsTask();
+        public async Task AddAsync(Service service, CancellationToken ct)
+        => await _dbContext.Services.AddAsync(service, ct);
 
-        public Task<Service?> GetByIdAsync(Guid id, CancellationToken ct)
-            => _dbContext.Services.FirstOrDefaultAsync(s => s.Id == id, ct);
+        public async Task<Service?> GetByIdAsync(Guid id, CancellationToken ct)
+            => await _dbContext.Services.FirstOrDefaultAsync(s => s.Id == id, ct);
 
-        public Task UpdateAsync(Service service, CancellationToken ct)
+        public Task Update(Service service)
         {
             _dbContext.Services.Update(service);
             return Task.CompletedTask;
         }
 
-        public IQueryable<Service> Query() => _dbContext.Services.AsQueryable();
+        public IQueryable<Service> Query() 
+            => _dbContext.Services.AsQueryable();
 
         public void Remove(Service service)
         {
