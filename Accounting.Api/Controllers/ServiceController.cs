@@ -61,12 +61,6 @@ public sealed class ServicesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<Guid>> Create([FromBody]CreateServiceRequest request, CancellationToken ct)
     {
-        if (request is null)
-        {
-            _logger.LogWarning("Create request was null");
-            return BadRequest();
-        }
-
         _logger.LogDebug("Creating service: {Name}", request.Name);
 
         var id = await _mediator.Send(

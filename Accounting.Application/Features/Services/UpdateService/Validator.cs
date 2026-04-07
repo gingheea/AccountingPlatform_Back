@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Accounting.Application.Features.Services.UpdateService
 {
-    internal class Validator : AbstractValidator<UpdateServiceCommand>
+    public class Validator : AbstractValidator<UpdateServiceCommand>
     {
         public Validator()
         {

@@ -33,7 +33,7 @@ namespace Accounting.Domain.Entities
        string fullName,
        string email,
        string? phone,
-       string message,
+       string? message,
        Guid? serviceId,
        RequestType requestType,
        RequestStatus status,
@@ -57,7 +57,7 @@ namespace Accounting.Domain.Entities
 
         public static ClientRequest Create(
        string fullName, string email,
-       string? phone, string message,
+       string? phone, string? message,
        Guid? serviceId, RequestType requestType)
         {
             var now = DateTime.UtcNow;
@@ -114,11 +114,9 @@ namespace Accounting.Domain.Entities
         {
             message = message?.Trim() ?? string.Empty;
 
-            if (string.IsNullOrWhiteSpace(message))
-                throw new DomainException("Message is required.");
 
             if (message.Length > 4000)
-                throw new DomainException("Phone max length is 4000.");
+                throw new DomainException("Message max length is 4000.");
 
             Message = message;
         }
@@ -170,6 +168,23 @@ namespace Accounting.Domain.Entities
             Touch();
         }
 
+        public void SetAdminNote(string? note)
+        {
+            note = note?.Trim();
+
+            if (string.IsNullOrWhiteSpace(note))
+            {
+                AdminNote = null;
+                Touch();
+                return;
+            }
+
+            if (note.Length > 2000)
+                throw new DomainException("Admin note max length is 2000.");
+
+            AdminNote = note;
+            Touch();
+        }
 
         private void Touch() => UpdatedAtUtc = DateTime.UtcNow;
     }

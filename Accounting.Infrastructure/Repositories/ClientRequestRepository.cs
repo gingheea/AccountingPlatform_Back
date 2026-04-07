@@ -26,9 +26,8 @@ namespace Accounting.Infrastructure.Repositories
         => await _dbContext.ClientRequests.FirstOrDefaultAsync(cr => cr.Id == id, ct);
 
         public IQueryable<ClientRequest> Query()
-        {
-            throw new NotImplementedException();
-        }
+            => _dbContext.ClientRequests.AsQueryable();
+
 
         public void Remove(ClientRequest clientRequest)
         {
