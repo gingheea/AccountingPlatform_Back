@@ -45,6 +45,17 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Frontend", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 
 var jwtSection = builder.Configuration.GetSection("Jwt");
 var key = jwtSection["Key"];
@@ -72,6 +83,8 @@ builder.Services
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
+
+app.UseCors("Frontend");
 
 if (app.Environment.IsDevelopment())
 {
