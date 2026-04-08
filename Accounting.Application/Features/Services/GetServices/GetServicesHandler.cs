@@ -1,5 +1,8 @@
 ﻿using Accounting.Application.Abstractions.Persistence;
+using Accounting.Application.Features.ClientRequests.Common;
 using Accounting.Application.Features.Services.Common;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -13,10 +16,12 @@ namespace Accounting.Application.Features.Services.List
     public sealed class GetServicesHandler : IRequestHandler<GetListServicesQuery, IReadOnlyList<ServiceDto>>
     {
         public readonly IServiceRepository _serviceRepository;
+        public readonly IMapper _mapper;
 
-        public GetServicesHandler(IServiceRepository serviceRepository)
+        public GetServicesHandler(IServiceRepository serviceRepository, IMapper mapper)
         {
-            _serviceRepository = serviceRepository;
+            _serviceRepository = serviceRepository ?? throw new ArgumentNullException(nameof(serviceRepository));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(serviceRepository));
         }
 
         public async Task<IReadOnlyList<ServiceDto>> Handle(GetListServicesQuery request, CancellationToken cancellationToken)
@@ -26,7 +31,7 @@ namespace Accounting.Application.Features.Services.List
            .Where(x => x.IsActive)
            .OrderBy(x => x.SortOrder)
            .ThenBy(x => x.Name)
-           .Select(x => new ServiceDto(x.Id, x.Name, x.Description, x.Price, x.IsActive, x.SortOrder ))
+           .ProjectTo<ServiceDto>(_mapper.ConfigurationProvider)
            .ToListAsync(cancellationToken);
         }
     }
