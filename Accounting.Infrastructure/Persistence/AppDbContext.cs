@@ -20,6 +20,8 @@ namespace Accounting.Infrastructure.Persistence
 
         public DbSet<ClientRequest> ClientRequests => Set<ClientRequest>();
 
+        public DbSet<ServiceTag> ServiceTags => Set<ServiceTag>();
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

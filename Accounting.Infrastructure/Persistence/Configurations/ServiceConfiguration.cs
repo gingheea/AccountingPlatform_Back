@@ -28,6 +28,14 @@ public sealed class ServiceConfiguration : IEntityTypeConfiguration<Service>
         b.Property(x => x.SortOrder)
             .IsRequired();
 
+        b.HasMany(x => x.Tags)
+           .WithOne()
+           .HasForeignKey(x => x.ServiceId)
+           .OnDelete(DeleteBehavior.Cascade);
+
+        b.Navigation(x => x.Tags)
+            .UsePropertyAccessMode(PropertyAccessMode.Field);
+
         b.HasIndex(x => x.IsActive);
         b.HasIndex(x => x.SortOrder);
     }

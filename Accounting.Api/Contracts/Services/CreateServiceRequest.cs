@@ -4,5 +4,6 @@ public sealed record CreateServiceRequest(
     string Name,
     string? Description,
     decimal Price,
+    string? PriceLabel,
     int SortOrder
 );

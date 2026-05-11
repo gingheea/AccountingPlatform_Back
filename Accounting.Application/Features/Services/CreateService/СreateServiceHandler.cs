@@ -21,6 +21,7 @@ public sealed class СreateServiceHandler : IRequestHandler<CreateServiceCommand
         var service = Service.Create(
             request.Name,
             request.Price,
+            request.PriceLabel,
             request.Description,
             request.SortOrder
         );

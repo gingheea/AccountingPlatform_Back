@@ -11,7 +11,9 @@ namespace Accounting.Application.Features.Services.Common
     string Name,
     string? Description,
     decimal Price,
+    string? PriceLabel,
     bool IsActive,
-    int SortOrder
+    int SortOrder,
+    IReadOnlyCollection<string> Tags
 );
 }

@@ -28,7 +28,7 @@ namespace Accounting.Application.Features.Services.UpdateService
                 throw new Application.Common.Errors.NotFoundException($"Service with id {request.Id} not found.");
             }
 
-            service.Update(request.Name, request.Price, request.Description, request.IsActive, request.SortOrder);
+            service.Update(request.Name, request.Price, request.PriceLabel, request.Description, request.IsActive, request.SortOrder);
             await _serviceRepository.Update(service);
             await _unitOfWork.SaveChangesAsync(ct);
         }

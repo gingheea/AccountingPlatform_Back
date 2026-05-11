@@ -11,6 +11,7 @@ namespace Accounting.Application.Features.Services.CreateService
     string Name,
     string? Description,
     decimal Price,
+    string? PriceLabel,
     int SortOrder ) : IRequest<Guid>;
 
 }

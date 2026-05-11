@@ -68,6 +68,7 @@ public sealed class ServicesController : ControllerBase
                 request.Name,
                 request.Description,
                 request.Price,
+                request.PriceLabel,
                 request.SortOrder
             ),
             ct);
@@ -99,6 +100,7 @@ public sealed class ServicesController : ControllerBase
                 request.Name,
                 request.Description,
                 request.Price,
+                request.PriceLabel,
                 request.IsActive,
                 request.SortOrder
             ),

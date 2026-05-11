@@ -14,7 +14,14 @@ namespace Accounting.Application.Common.Mapping
     {
         public ServiceMappingProfile()
         {
-            CreateMap<Service, ServiceDto>();
+            CreateMap<Service, ServiceDto>()
+             .ForCtorParam(
+                 "Tags",
+                 opt => opt.MapFrom(src => src.Tags
+                     .OrderBy(tag => tag.SortOrder)
+                     .Select(tag => tag.Name)
+                 )
+             );
         }
     }
 }

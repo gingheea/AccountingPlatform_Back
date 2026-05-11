@@ -4,6 +4,7 @@
      string Name,
      string? Description,
      decimal Price,
+     string? PriceLabel,
      bool IsActive,
      int SortOrder
  );
