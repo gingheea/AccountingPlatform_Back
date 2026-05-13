@@ -29,12 +29,14 @@ public sealed class ServiceConfiguration : IEntityTypeConfiguration<Service>
             .IsRequired();
 
         b.HasMany(x => x.Tags)
-           .WithOne()
-           .HasForeignKey(x => x.ServiceId)
-           .OnDelete(DeleteBehavior.Cascade);
+    .WithOne()
+    .HasForeignKey(x => x.ServiceId)
+    .OnDelete(DeleteBehavior.Cascade);
 
         b.Navigation(x => x.Tags)
+            .HasField("_tags")
             .UsePropertyAccessMode(PropertyAccessMode.Field);
+
 
         b.HasIndex(x => x.IsActive);
         b.HasIndex(x => x.SortOrder);

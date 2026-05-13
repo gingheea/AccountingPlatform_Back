@@ -5,7 +5,7 @@ namespace Accounting.Domain.Entities;
 
 public sealed class Service
 {
-    private readonly List<ServiceTag> _tags = new();
+    private List<ServiceTag> _tags = new();
 
     public Guid Id { get; private set; }
 
@@ -71,10 +71,8 @@ public sealed class Service
         Price = price;
         PriceLabel = string.IsNullOrWhiteSpace(priceLabel) ? null : priceLabel.Trim();
     }
-    public void ReplaceTags(IEnumerable<string> tags)
+    public IReadOnlyList<ServiceTag> CreateReplacementTags(IEnumerable<string> tags)
     {
-        _tags.Clear();
-
         var normalizedTags = tags
             .Where(tag => !string.IsNullOrWhiteSpace(tag))
             .Select(tag => tag.Trim())
@@ -82,10 +80,9 @@ public sealed class Service
             .Take(8)
             .ToList();
 
-        for (var i = 0; i < normalizedTags.Count; i++)
-        {
-            _tags.Add(ServiceTag.Create(Id, normalizedTags[i], i));
-        }
+        return normalizedTags
+            .Select((tag, index) => ServiceTag.Create(Id, tag, index))
+            .ToList();
     }
 
     private void SetDescription(string? description)

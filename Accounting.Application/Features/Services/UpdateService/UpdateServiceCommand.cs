@@ -14,5 +14,6 @@ namespace Accounting.Application.Features.Services.UpdateService
     decimal Price,
     string? PriceLabel,
     bool IsActive,
-    int SortOrder) : IRequest;
+    int SortOrder,
+    IReadOnlyCollection<string> Tags) : IRequest;
 }

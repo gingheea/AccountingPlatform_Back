@@ -6,6 +6,7 @@
      decimal Price,
      string? PriceLabel,
      bool IsActive,
-     int SortOrder
+     int SortOrder,
+     IReadOnlyCollection<string> Tags
  );
 }

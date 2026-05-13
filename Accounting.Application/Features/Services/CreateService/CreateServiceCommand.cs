@@ -12,6 +12,7 @@ namespace Accounting.Application.Features.Services.CreateService
     string? Description,
     decimal Price,
     string? PriceLabel,
-    int SortOrder ) : IRequest<Guid>;
+    int SortOrder,
+    IReadOnlyCollection<string> Tags) : IRequest<Guid>;
 
 }

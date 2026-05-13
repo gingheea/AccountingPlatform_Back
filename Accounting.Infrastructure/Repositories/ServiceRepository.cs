@@ -22,10 +22,14 @@ namespace Accounting.Infrastructure.Repositories
         public async Task<Service?> GetByIdAsync(Guid id, CancellationToken ct)
             => await _dbContext.Services.FirstOrDefaultAsync(s => s.Id == id, ct);
 
-        public Task Update(Service service)
+        public async Task DeleteTagsByServiceIdAsync(Guid serviceId, CancellationToken ct)
+            => await _dbContext.Set<ServiceTag>()
+                .Where(t => t.ServiceId == serviceId)
+                .ExecuteDeleteAsync(ct);
+
+        public async Task AddTagsAsync(IEnumerable<ServiceTag> tags, CancellationToken ct)
         {
-            _dbContext.Services.Update(service);
-            return Task.CompletedTask;
+            await _dbContext.ServiceTags.AddRangeAsync(tags, ct);
         }
 
         public IQueryable<Service> Query() 

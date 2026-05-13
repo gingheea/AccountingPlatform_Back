@@ -5,5 +5,6 @@ public sealed record CreateServiceRequest(
     string? Description,
     decimal Price,
     string? PriceLabel,
-    int SortOrder
+    int SortOrder,
+    IReadOnlyCollection<string> Tags
 );

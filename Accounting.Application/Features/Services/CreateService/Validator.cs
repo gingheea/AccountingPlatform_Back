@@ -23,6 +23,16 @@ namespace Accounting.Application.Features.Services.CreateService
 
             RuleFor(x => x.SortOrder)
                 .GreaterThanOrEqualTo(0).WithMessage("SortOrder cannot be negative.");
+
+            RuleFor(x => x.Tags)
+                .NotEmpty().WithMessage("Tags list cannot be empty.")
+                .Must(tags => tags == null || tags.Count <= 20).WithMessage("You can add a maximum of 20 tags.");
+
+
+            RuleForEach(x => x.Tags)
+                .NotEmpty().WithMessage("Tag cannot be empty.")
+                .MaximumLength(50).WithMessage("Tag max length is 50 characters.");
+
         }
     }
 }

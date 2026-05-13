@@ -10,7 +10,6 @@ public sealed class ServiceTag
     public string Name { get; private set; } = string.Empty;
     public int SortOrder { get; private set; }
 
-    // EF Core needs it
     private ServiceTag() { }
 
     private ServiceTag(Guid id, Guid serviceId, string name, int sortOrder)
@@ -27,6 +26,11 @@ public sealed class ServiceTag
             throw new DomainException("Service id is required.");
 
         return new ServiceTag(Guid.NewGuid(), serviceId, name, sortOrder);
+    }
+
+    public void UpdateSortOrder(int sortOrder)
+    {
+        SortOrder = sortOrder;
     }
 
     private void SetName(string name)

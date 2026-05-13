@@ -1,4 +1,5 @@
 ﻿using Accounting.Application.Abstractions.Persistence;
+using Accounting.Application.Common.Errors;
 using Accounting.Application.Features.Services.CreateService;
 using MediatR;
 using System;
@@ -24,12 +25,22 @@ namespace Accounting.Application.Features.Services.UpdateService
             var service = await _serviceRepository.GetByIdAsync(request.Id, ct);
 
             if (service is null)
-            {
-                throw new Application.Common.Errors.NotFoundException($"Service with id {request.Id} not found.");
-            }
+                throw new NotFoundException($"Service with id {request.Id} not found.");
 
-            service.Update(request.Name, request.Price, request.PriceLabel, request.Description, request.IsActive, request.SortOrder);
-            await _serviceRepository.Update(service);
+            service.Update(
+                request.Name,
+                request.Price,
+                request.PriceLabel,
+                request.Description,
+                request.IsActive,
+                request.SortOrder);
+
+            await _serviceRepository.DeleteTagsByServiceIdAsync(request.Id, ct);
+
+            var newTags = service.CreateReplacementTags(request.Tags);
+
+            await _serviceRepository.AddTagsAsync(newTags, ct);
+
             await _unitOfWork.SaveChangesAsync(ct);
         }
     }

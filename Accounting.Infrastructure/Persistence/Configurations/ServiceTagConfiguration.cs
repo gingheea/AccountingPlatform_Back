@@ -17,12 +17,15 @@ namespace Accounting.Infrastructure.Persistence.Configurations
 
             b.HasKey(x => x.Id);
 
+            b.Property(x => x.Id)
+                .ValueGeneratedNever();
+
             b.Property(x => x.ServiceId)
                 .IsRequired();
 
             b.Property(x => x.Name)
-                .HasMaxLength(50)
-                .IsRequired();
+                .IsRequired()
+                .HasMaxLength(50);
 
             b.Property(x => x.SortOrder)
                 .IsRequired();

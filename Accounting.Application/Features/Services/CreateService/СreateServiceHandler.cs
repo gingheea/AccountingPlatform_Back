@@ -26,6 +26,10 @@ public sealed class СreateServiceHandler : IRequestHandler<CreateServiceCommand
             request.SortOrder
         );
 
+        var newTags = service.CreateReplacementTags(request.Tags);
+
+        await _serviceRepository.AddTagsAsync(newTags, ct);
+
         await _serviceRepository.AddAsync(service, ct);
         await _unitOfWork.SaveChangesAsync(ct);
 
