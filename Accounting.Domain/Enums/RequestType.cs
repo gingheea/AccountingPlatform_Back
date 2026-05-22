@@ -8,7 +8,8 @@ namespace Accounting.Domain.Enums
 {
     public enum RequestType
     {
-        Question = 1,
-        Request = 2
+        Service = 0,
+        Package = 1,
+        GeneralConsultation = 2
     }
 }

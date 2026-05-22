@@ -22,6 +22,7 @@
   <ItemGroup>
     <Folder Include="Abstractions\Messaging\" />
     <Folder Include="Common\Models\" />
+    <Folder Include="Features\PricngPackages\UpdatePricingPackage\" />
   </ItemGroup>
 
 </Project>

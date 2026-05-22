@@ -11,7 +11,7 @@ namespace Accounting.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<ClientRequest> b)
         {
-            b.ToTable("clientRequests");
+            b.ToTable("ClientRequests");
 
             b.HasKey(x => x.Id);
 
@@ -31,15 +31,34 @@ namespace Accounting.Infrastructure.Persistence.Configurations
             b.Property(x => x.Email)
                 .IsRequired();
 
-             b.Property(x => x.CreatedAtUtc)
+            b.Property(x => x.CreatedAtUtc)
                 .IsRequired();
 
-               b.Property(x => x.UpdatedAtUtc)
+            b.Property(x => x.UpdatedAtUtc)
                 .IsRequired();
 
-            b.HasIndex(x => x.RequestType);
+            b.Property(x => x.ServiceId);
+
+            b.Property(x => x.PricingPackageId);
+
+            b.HasOne<Service>()
+            .WithMany()
+            .HasForeignKey(x => x.ServiceId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+            b.HasOne<PricingPackage>()
+                .WithMany()
+                .HasForeignKey(x => x.PricingPackageId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            b.HasIndex(x => x.ServiceId);
+            b.HasIndex(x => x.PricingPackageId);
             b.HasIndex(x => x.Status);
-            
+            b.HasIndex(x => x.RequestType);
+            b.HasIndex(x => x.CreatedAtUtc);
+
+
+
         }
     }
 }

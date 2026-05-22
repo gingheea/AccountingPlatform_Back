@@ -22,6 +22,8 @@ namespace Accounting.Infrastructure.Persistence
 
         public DbSet<ServiceTag> ServiceTags => Set<ServiceTag>();
 
+        public DbSet<PricingPackage> PricingPackages => Set<PricingPackage>();
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

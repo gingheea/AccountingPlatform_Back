@@ -34,6 +34,7 @@ public static class DependencyInjection
         services.AddScoped<IIdentityAuthService, IdentityAuthService>();
         services.AddScoped<IServiceRepository, ServiceRepository>();
         services.AddScoped<IClientRequestRepository, ClientRequestRepository>();
+        services.AddScoped<IPricingPackageRepository, PricingPackageRepository>();
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<AppDbContext>());
 
         return services;

@@ -28,6 +28,7 @@ namespace Accounting.Application.Features.ClientRequests.CreateClientRequest
                 request.PhoneNumber,
                 request.Message,
                 request.ServiceId,
+                request.PricingPackageId,
                 request.RequestType
             );
 

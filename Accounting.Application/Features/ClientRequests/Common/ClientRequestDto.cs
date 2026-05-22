@@ -16,6 +16,7 @@ namespace Accounting.Application.Features.ClientRequests.Common
         string? Message,
         string? AdminNote,
         Guid? ServiceId,
+        Guid? PricingPackageId,
         RequestStatus Status,
         RequestType RequestType,
         DateTime CreatedAtUtc,

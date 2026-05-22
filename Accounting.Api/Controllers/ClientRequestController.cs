@@ -51,7 +51,7 @@ namespace Accounting.Api.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<Guid>> Create([FromBody] CreateClientRequestRequest request, CancellationToken ct) 
         {
-            var clientRequestId = await _mediator.Send(new CreateClientRequestCommand(request.FullName, request.Email, request.PhoneNumber, request.Message, request.ServiceId, request.RequestType), ct);
+            var clientRequestId = await _mediator.Send(new CreateClientRequestCommand(request.FullName, request.Email, request.PhoneNumber, request.Message, request.ServiceId, request.PricingPackageId, request.RequestType), ct);
             return CreatedAtAction(nameof(GetById), new { id = clientRequestId }, new { id = clientRequestId });
         }
 

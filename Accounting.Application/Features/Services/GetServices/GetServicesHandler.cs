@@ -21,7 +21,7 @@ namespace Accounting.Application.Features.Services.List
         public GetServicesHandler(IServiceRepository serviceRepository, IMapper mapper)
         {
             _serviceRepository = serviceRepository ?? throw new ArgumentNullException(nameof(serviceRepository));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(serviceRepository));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         public async Task<IReadOnlyList<ServiceDto>> Handle(GetListServicesQuery request, CancellationToken cancellationToken)

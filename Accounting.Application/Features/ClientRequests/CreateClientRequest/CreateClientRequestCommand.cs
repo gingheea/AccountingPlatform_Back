@@ -14,6 +14,7 @@ namespace Accounting.Application.Features.ClientRequests.CreateClientRequest
         string? PhoneNumber,
         string? Message,
         Guid? ServiceId,
+        Guid? PricingPackageId,
         RequestType RequestType) : IRequest<Guid>
     {
     }
