@@ -7,5 +7,5 @@ using System.Threading.Tasks;
 
 namespace Accounting.Application.Features.PricngPackages.DeletePricingPackage
 {
-    public sealed record DeletePricingPackageRequest(Guid Id) : IRequest;
+    public sealed record DeletePricingPackageCommand(Guid Id) : IRequest;
 }

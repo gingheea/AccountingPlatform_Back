@@ -2,6 +2,7 @@
 using Accounting.Api.Contracts.Services;
 using Accounting.Application.Features.PricingPackages.Common;
 using Accounting.Application.Features.PricngPackages.CreatePricingPackage;
+using Accounting.Application.Features.PricngPackages.DeletePricingPackage;
 using Accounting.Application.Features.PricngPackages.GetPricingPackageById;
 using Accounting.Application.Features.PricngPackages.GetPricingPackages;
 using Accounting.Application.Features.PricngPackages.UpdatePricingPackage;
@@ -77,11 +78,19 @@ namespace Accounting.Api.Controllers
                     request.PriceLabel,
                     request.PeriodLabel,
                     request.IsRecommended ?? false,
-                    request.IsActive ?? true,  
+                    request.IsActive ?? true,
                     request.Features ?? Array.Empty<string>(),
                     request.SortOrder ?? 0
                 ),
                 ct);
+            return NoContent();
+        }
+
+        [HttpDelete("{id:guid}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult> DeletePricingPackage(Guid id, CancellationToken ct)
+        {
+            await _mediator.Send(new DeletePricingPackageCommand(id), ct);
             return NoContent();
         }
     }

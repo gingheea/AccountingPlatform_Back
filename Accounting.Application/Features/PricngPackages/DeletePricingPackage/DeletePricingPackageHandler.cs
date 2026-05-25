@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Accounting.Application.Features.PricngPackages.DeletePricingPackage
 {
-    public class DeletePricingPackageHandler : IRequestHandler<DeletePricingPackageRequest>
+    public class DeletePricingPackageHandler : IRequestHandler<DeletePricingPackageCommand>
     {
         private readonly IPricingPackageRepository _pricingPackageRepository;
         private readonly IUnitOfWork _unitOfWork;
@@ -21,7 +21,7 @@ namespace Accounting.Application.Features.PricngPackages.DeletePricingPackage
             _unitOfWork = unitOfWork;
         }
 
-        public async Task Handle(DeletePricingPackageRequest request, CancellationToken cancellationToken)
+        public async Task Handle(DeletePricingPackageCommand request, CancellationToken cancellationToken)
         {
             var pricingPackage = await _pricingPackageRepository.GetByIdAsync(request.Id, cancellationToken);
             if (pricingPackage == null) 
@@ -30,6 +30,7 @@ namespace Accounting.Application.Features.PricngPackages.DeletePricingPackage
             }
 
             _pricingPackageRepository.Remove(pricingPackage);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         }
     }
