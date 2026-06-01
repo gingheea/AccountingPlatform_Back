@@ -113,6 +113,21 @@ public sealed class ServicesController : ControllerBase
         return NoContent();
     }
 
+
+    [HttpDelete("{id:guid}")]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Delete(Guid id, CancellationToken ct)
+    {
+        _logger.LogDebug("Deleting service with id: {ServiceId}", id);
+        await _mediator.Send(new DeleteServiceCommand(id), ct);
+        _logger.LogInformation("Service deleted with id: {ServiceId}", id);
+        return NoContent();
+    }
+
     [HttpPatch("{id:guid}/deactivate")]
     [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
