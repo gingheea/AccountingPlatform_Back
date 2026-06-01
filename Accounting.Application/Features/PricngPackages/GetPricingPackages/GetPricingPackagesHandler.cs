@@ -29,7 +29,6 @@ namespace Accounting.Application.Features.PricngPackages.GetPricingPackages
         {
             return await _pricingPackageRepository.Query()
             .AsNoTracking()
-            .Where(x => x.IsActive)
             .OrderBy(x => x.SortOrder)
             .ThenBy(x => x.Name)
             .ProjectTo<PricingPackageDto>(_mapper.ConfigurationProvider)

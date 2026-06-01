@@ -3,6 +3,7 @@ using Accounting.Application.Features.Services.ActivateService;
 using Accounting.Application.Features.Services.Common;
 using Accounting.Application.Features.Services.CreateService;
 using Accounting.Application.Features.Services.DeactivateService;
+using Accounting.Application.Features.Services.DeleteService;
 using Accounting.Application.Features.Services.Get;
 using Accounting.Application.Features.Services.List;
 using Accounting.Application.Features.Services.UpdateService;

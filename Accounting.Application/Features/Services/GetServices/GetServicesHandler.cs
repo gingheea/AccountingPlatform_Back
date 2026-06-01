@@ -28,7 +28,6 @@ namespace Accounting.Application.Features.Services.List
         {
             return await _serviceRepository.Query()
            .AsNoTracking()
-           .Where(x => x.IsActive)
            .OrderBy(x => x.SortOrder)
            .ThenBy(x => x.Name)
            .ProjectTo<ServiceDto>(_mapper.ConfigurationProvider)
