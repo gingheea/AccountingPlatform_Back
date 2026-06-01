@@ -1,4 +1,5 @@
 ﻿using Accounting.Api.Contracts.Services;
+using Accounting.Application.Features.Services.ActivateService;
 using Accounting.Application.Features.Services.Common;
 using Accounting.Application.Features.Services.CreateService;
 using Accounting.Application.Features.Services.DeactivateService;
@@ -121,6 +122,18 @@ public sealed class ServicesController : ControllerBase
     public async Task<IActionResult> Deactivate(Guid id, CancellationToken ct)
     {
         await _mediator.Send(new DeactivateCommand(id), ct);
+        return NoContent();
+    }
+
+    [HttpPatch("{id:guid}/activate")]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Activate(Guid id, CancellationToken ct)
+    {
+        await _mediator.Send(new ActivateCommand(id), ct);
         return NoContent();
     }
 }
