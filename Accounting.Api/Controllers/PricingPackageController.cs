@@ -1,12 +1,16 @@
 ﻿using Accounting.Api.Contracts.PricingPackagaes;
 using Accounting.Api.Contracts.Services;
 using Accounting.Application.Features.PricingPackages.Common;
+using Accounting.Application.Features.PricngPackages.ActivatePricingPackage;
 using Accounting.Application.Features.PricngPackages.CreatePricingPackage;
+using Accounting.Application.Features.PricngPackages.DeactivatePricingPackage;
 using Accounting.Application.Features.PricngPackages.DeletePricingPackage;
 using Accounting.Application.Features.PricngPackages.GetPricingPackageById;
 using Accounting.Application.Features.PricngPackages.GetPricingPackages;
 using Accounting.Application.Features.PricngPackages.UpdatePricingPackage;
+using Accounting.Application.Features.Services.ActivateService;
 using Accounting.Application.Features.Services.CreateService;
+using Accounting.Application.Features.Services.DeactivateService;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -91,6 +95,30 @@ namespace Accounting.Api.Controllers
         public async Task<ActionResult> DeletePricingPackage(Guid id, CancellationToken ct)
         {
             await _mediator.Send(new DeletePricingPackageCommand(id), ct);
+            return NoContent();
+        }
+
+        [HttpPatch("{id:guid}/deactivate")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Deactivate(Guid id, CancellationToken ct)
+        {
+            await _mediator.Send(new DeactivatePricingPackageCommand(id), ct);
+            return NoContent();
+        }
+
+        [HttpPatch("{id:guid}/activate")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Activate(Guid id, CancellationToken ct)
+        {
+            await _mediator.Send(new ActivatePricingPackageCommand(id), ct);
             return NoContent();
         }
     }
