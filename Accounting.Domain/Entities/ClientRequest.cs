@@ -15,6 +15,7 @@ public sealed class ClientRequest
 
     public Guid? ServiceId { get; private set; }
     public Guid? PricingPackageId { get; private set; }
+    public Guid? UserId { get; private set; }
 
     public RequestStatus Status { get; private set; }
     public RequestType RequestType { get; private set; }
@@ -238,6 +239,21 @@ public sealed class ClientRequest
             throw new DomainException("Message max length is 4000.");
 
         Message = message;
+    }
+
+    public void AssignUser(Guid userId)
+    {
+        if (userId == Guid.Empty)
+            throw new DomainException("User id is required.");
+
+        UserId = userId;
+        Touch();
+    }
+
+    public void UnassignUser()
+    {
+        UserId = null;
+        Touch();
     }
 
     private void Touch() => UpdatedAtUtc = DateTime.UtcNow;

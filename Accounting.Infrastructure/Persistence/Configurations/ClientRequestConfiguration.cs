@@ -1,8 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using Accounting.Domain.Entities;
+﻿using Accounting.Domain.Entities;
+using Accounting.Infrastructure.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System;
+using System.Collections.Generic;
 
 
 namespace Accounting.Infrastructure.Persistence.Configurations
@@ -41,6 +42,13 @@ namespace Accounting.Infrastructure.Persistence.Configurations
 
             b.Property(x => x.PricingPackageId);
 
+            b.Property(x => x.UserId);
+
+            b.HasOne<AppUser>()
+                .WithMany()
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.SetNull);
+
             b.HasOne<Service>()
             .WithMany()
             .HasForeignKey(x => x.ServiceId)
@@ -56,7 +64,7 @@ namespace Accounting.Infrastructure.Persistence.Configurations
             b.HasIndex(x => x.Status);
             b.HasIndex(x => x.RequestType);
             b.HasIndex(x => x.CreatedAtUtc);
-
+            b.HasIndex(x => x.UserId);
 
 
         }

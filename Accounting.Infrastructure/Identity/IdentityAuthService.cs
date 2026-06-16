@@ -22,6 +22,8 @@ public sealed class IdentityAuthService : IIdentityAuthService
         var user = await _userManager.FindByEmailAsync(email);
         if (user is null) return null;
 
+        if (!user.IsActive) return null;
+
         var result = await _signInManager.CheckPasswordSignInAsync(user, password, lockoutOnFailure: false);
         if (!result.Succeeded) return null;
 

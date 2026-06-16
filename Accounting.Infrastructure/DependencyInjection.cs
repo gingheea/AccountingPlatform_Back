@@ -1,4 +1,5 @@
 ﻿using Accounting.Application.Abstractions.Auth;
+using Accounting.Application.Abstractions.Identity;
 using Accounting.Application.Abstractions.Persistence;
 using Accounting.Infrastructure.Identity;
 using Accounting.Infrastructure.Persistence;
@@ -35,6 +36,7 @@ public static class DependencyInjection
         services.AddScoped<IServiceRepository, ServiceRepository>();
         services.AddScoped<IClientRequestRepository, ClientRequestRepository>();
         services.AddScoped<IPricingPackageRepository, PricingPackageRepository>();
+        services.AddScoped<IUserManagementService, UserManagementService>();
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<AppDbContext>());
 
         return services;

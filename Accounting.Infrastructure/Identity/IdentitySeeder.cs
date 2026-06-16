@@ -25,8 +25,41 @@ public sealed class IdentitySeeder
 
     public async Task SeedAsync()
     {
-        const string adminRole = Roles.Admin;
+        await SeedRolesAsync();
+        await SeedAdminUserAsync();
+    }
 
+    private async Task SeedRolesAsync()
+    {
+        string[] roles =
+        [
+            Roles.Admin,
+            Roles.User
+        ];
+
+        foreach (var role in roles)
+        {
+            if (await _roleManager.RoleExistsAsync(role))
+                continue;
+
+            var roleResult = await _roleManager.CreateAsync(
+                new IdentityRole<Guid>(role)
+            );
+
+            if (!roleResult.Succeeded)
+            {
+                throw new InvalidOperationException(
+                    $"Failed to create {role} role: " +
+                    string.Join(", ", roleResult.Errors.Select(e => e.Description))
+                );
+            }
+
+            _logger.LogInformation("{Role} role created.", role);
+        }
+    }
+
+    private async Task SeedAdminUserAsync()
+    {
         var adminEmail = _configuration["Seed:AdminEmail"];
         var adminPassword = _configuration["Seed:AdminPassword"];
 
@@ -40,21 +73,6 @@ public sealed class IdentitySeeder
             throw new InvalidOperationException("Seed:AdminPassword is not configured.");
         }
 
-        if (!await _roleManager.RoleExistsAsync(adminRole))
-        {
-            var roleResult = await _roleManager.CreateAsync(new IdentityRole<Guid>(adminRole));
-
-            if (!roleResult.Succeeded)
-            {
-                throw new InvalidOperationException(
-                    "Failed to create Admin role: " +
-                    string.Join(", ", roleResult.Errors.Select(e => e.Description))
-                );
-            }
-
-            _logger.LogInformation("Admin role created.");
-        }
-
         var adminUser = await _userManager.FindByEmailAsync(adminEmail);
 
         if (adminUser is null)
@@ -63,7 +81,10 @@ public sealed class IdentitySeeder
             {
                 UserName = adminEmail,
                 Email = adminEmail,
-                EmailConfirmed = true
+                EmailConfirmed = true,
+                FullName = "System Administrator",
+                IsActive = true,
+                CreatedAt = DateTimeOffset.UtcNow
             };
 
             var userResult = await _userManager.CreateAsync(adminUser, adminPassword);
@@ -79,9 +100,9 @@ public sealed class IdentitySeeder
             _logger.LogInformation("Admin user created.");
         }
 
-        if (!await _userManager.IsInRoleAsync(adminUser, adminRole))
+        if (!await _userManager.IsInRoleAsync(adminUser, Roles.Admin))
         {
-            var addToRoleResult = await _userManager.AddToRoleAsync(adminUser, adminRole);
+            var addToRoleResult = await _userManager.AddToRoleAsync(adminUser, Roles.Admin);
 
             if (!addToRoleResult.Succeeded)
             {
