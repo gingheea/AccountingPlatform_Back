@@ -45,12 +45,16 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
+var allowedOrigins = builder.Configuration
+    .GetSection("AllowedOrigins")
+    .Get<string[]>() ?? Array.Empty<string>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("Frontend", policy =>
     {
         policy
-            .WithOrigins("http://localhost:5173")
+            .WithOrigins(allowedOrigins)
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
@@ -59,6 +63,11 @@ builder.Services.AddCors(options =>
 
 var jwtSection = builder.Configuration.GetSection("Jwt");
 var key = jwtSection["Key"];
+
+if (string.IsNullOrWhiteSpace(key))
+{
+    throw new InvalidOperationException("JWT key is not configured.");
+}
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -74,8 +83,8 @@ builder.Services
             ValidIssuer = jwtSection["Issuer"],
             ValidAudience = jwtSection["Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(key!)
-            ),
+    Encoding.UTF8.GetBytes(key)
+),
             RoleClaimType = ClaimTypes.Role
         };
     });
@@ -86,9 +95,8 @@ var app = builder.Build();
 
 app.UseCors("Frontend");
 
-if (app.Environment.IsDevelopment())
+using (var scope = app.Services.CreateScope())
 {
-    using var scope = app.Services.CreateScope();
     var seeder = scope.ServiceProvider.GetRequiredService<IdentitySeeder>();
     await seeder.SeedAsync();
 }

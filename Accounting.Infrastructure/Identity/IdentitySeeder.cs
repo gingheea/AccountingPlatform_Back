@@ -40,7 +40,10 @@ public sealed class IdentitySeeder
         foreach (var role in roles)
         {
             if (await _roleManager.RoleExistsAsync(role))
+            {
+                _logger.LogInformation("{Role} role already exists.", role);
                 continue;
+            }
 
             var roleResult = await _roleManager.CreateAsync(
                 new IdentityRole<Guid>(role)
@@ -63,15 +66,17 @@ public sealed class IdentitySeeder
         var adminEmail = _configuration["Seed:AdminEmail"];
         var adminPassword = _configuration["Seed:AdminPassword"];
 
-        if (string.IsNullOrWhiteSpace(adminEmail))
+        if (string.IsNullOrWhiteSpace(adminEmail) ||
+            string.IsNullOrWhiteSpace(adminPassword))
         {
-            throw new InvalidOperationException("Seed:AdminEmail is not configured.");
+            _logger.LogWarning(
+                "Admin user was not seeded because Seed:AdminEmail or Seed:AdminPassword is not configured."
+            );
+
+            return;
         }
 
-        if (string.IsNullOrWhiteSpace(adminPassword))
-        {
-            throw new InvalidOperationException("Seed:AdminPassword is not configured.");
-        }
+        adminEmail = adminEmail.Trim().ToLowerInvariant();
 
         var adminUser = await _userManager.FindByEmailAsync(adminEmail);
 
@@ -99,6 +104,41 @@ public sealed class IdentitySeeder
 
             _logger.LogInformation("Admin user created.");
         }
+        else
+        {
+            var shouldUpdate = false;
+
+            if (!adminUser.IsActive)
+            {
+                adminUser.IsActive = true;
+                shouldUpdate = true;
+            }
+
+            if (!adminUser.EmailConfirmed)
+            {
+                adminUser.EmailConfirmed = true;
+                shouldUpdate = true;
+            }
+
+            if (shouldUpdate)
+            {
+                var updateResult = await _userManager.UpdateAsync(adminUser);
+
+                if (!updateResult.Succeeded)
+                {
+                    throw new InvalidOperationException(
+                        "Failed to update Admin user: " +
+                        string.Join(", ", updateResult.Errors.Select(e => e.Description))
+                    );
+                }
+
+                _logger.LogInformation("Admin user updated.");
+            }
+            else
+            {
+                _logger.LogInformation("Admin user already exists.");
+            }
+        }
 
         if (!await _userManager.IsInRoleAsync(adminUser, Roles.Admin))
         {
@@ -113,6 +153,10 @@ public sealed class IdentitySeeder
             }
 
             _logger.LogInformation("Admin user assigned to Admin role.");
+        }
+        else
+        {
+            _logger.LogInformation("Admin user already has Admin role.");
         }
     }
 }
