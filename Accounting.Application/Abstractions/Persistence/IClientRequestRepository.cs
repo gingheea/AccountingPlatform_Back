@@ -13,6 +13,8 @@ namespace Accounting.Application.Abstractions.Persistence
 
         Task AddAsync(ClientRequest clientRequest, CancellationToken ct);
 
+        Task<IReadOnlyList<ClientRequest>> ListByUserIdAsync(Guid userId, CancellationToken ct);
+
         void Remove(ClientRequest clientRequest);
 
         IQueryable<ClientRequest> Query();

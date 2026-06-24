@@ -1,5 +1,7 @@
 using Accounting.Api.Middlewares;
+using Accounting.Api.Service;
 using Accounting.Application;
+using Accounting.Application.Abstractions.Identity;
 using Accounting.Infrastructure;
 using Accounting.Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -44,6 +46,8 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 var allowedOrigins = builder.Configuration
     .GetSection("AllowedOrigins")

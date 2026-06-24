@@ -1,4 +1,5 @@
 ﻿using Accounting.Application.Abstractions.Identity;
+using Accounting.Application.Features.Portal.Common;
 using Accounting.Application.Features.Users.Common;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -62,6 +63,34 @@ public sealed class UserManagementService : IUserManagementService
             user.IsActive,
             roles.ToArray(),
             user.CreatedAt
+        );
+    }
+
+    public async Task<bool> ExistsAsync(Guid id, CancellationToken ct)
+    {
+        var user = await _userManager.FindByIdAsync(id.ToString());
+
+        return user is not null;
+    }
+
+    public async Task<PortalUserDto?> GetPortalUserByIdAsync(Guid id, CancellationToken ct)
+    {
+        var user = await _userManager.FindByIdAsync(id.ToString());
+
+        if (user is null)
+            return null;
+
+        if (!user.IsActive)
+            return null;
+
+        var roles = await _userManager.GetRolesAsync(user);
+
+        return new PortalUserDto(
+            user.Id,
+            user.Email ?? string.Empty,
+            user.FullName,
+            user.TaxId,
+            roles.ToArray()
         );
     }
 

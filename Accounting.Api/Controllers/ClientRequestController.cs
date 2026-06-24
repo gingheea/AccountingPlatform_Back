@@ -1,12 +1,14 @@
 ﻿using Accounting.Api.Contracts.ClientRequests;
+using Accounting.Application.Features.ClientRequests.AssignClientRequestToUser;
 using Accounting.Application.Features.ClientRequests.ChangeAdminNote;
 using Accounting.Application.Features.ClientRequests.ChangeStatus;
 using Accounting.Application.Features.ClientRequests.Common;
 using Accounting.Application.Features.ClientRequests.Complete;
-using Accounting.Application.Features.ClientRequests.Reject;
 using Accounting.Application.Features.ClientRequests.CreateClientRequest;
 using Accounting.Application.Features.ClientRequests.GetClientRequest;
 using Accounting.Application.Features.ClientRequests.ListClientRequests;
+using Accounting.Application.Features.ClientRequests.Reject;
+using Accounting.Application.Features.ClientRequests.UnassignClientRequestUser;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -60,6 +62,33 @@ namespace Accounting.Api.Controllers
         public async Task<ActionResult> ChangeStatus(Guid id, [FromBody] ChangeClientRequestStatusRequest request, CancellationToken ct) 
         {
             await _mediator.Send(new ChangeClientRequestStatusCommand(id, request.Status), ct);
+            return NoContent();
+        }
+
+        [HttpPatch("{id:guid}/assign-user")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult> AssignUser(
+    Guid id,
+    [FromBody] AssignClientRequestToUserRequest request,
+    CancellationToken ct)
+        {
+            await _mediator.Send(
+                new AssignClientRequestToUserCommand(id, request.UserId),
+                ct);
+
+            return NoContent();
+        }
+
+        [HttpPatch("{id:guid}/unassign-user")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult> UnassignUser(
+            Guid id,
+            CancellationToken ct)
+        {
+            await _mediator.Send(
+                new UnassignClientRequestUserCommand(id),
+                ct);
+
             return NoContent();
         }
 

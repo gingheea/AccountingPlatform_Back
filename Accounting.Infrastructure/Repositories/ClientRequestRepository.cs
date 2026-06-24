@@ -29,6 +29,15 @@ namespace Accounting.Infrastructure.Repositories
             => _dbContext.ClientRequests.AsQueryable();
 
 
+        public async Task<IReadOnlyList<ClientRequest>> ListByUserIdAsync(Guid userId, CancellationToken ct)
+        {
+            return await _dbContext.ClientRequests
+                .AsNoTracking()
+                .Where(x => x.UserId == userId)
+                .OrderByDescending(x => x.CreatedAtUtc)
+                .ToListAsync(ct);
+        }
+
         public void Remove(ClientRequest clientRequest)
         {
             throw new NotImplementedException();

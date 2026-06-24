@@ -36,6 +36,7 @@ public sealed class ClientRequest
         Guid? pricingPackageId,
         RequestType requestType,
         RequestStatus status,
+        Guid? userId,
         DateTime createdAtUtc,
         DateTime updatedAtUtc)
     {
@@ -45,6 +46,7 @@ public sealed class ClientRequest
         SetEmail(email);
         SetPhone(phone);
         SetMessage(message);
+        SetUserId(userId);
 
         SetSelection(requestType, serviceId, pricingPackageId);
 
@@ -60,7 +62,8 @@ public sealed class ClientRequest
         string? message,
         Guid? serviceId,
         Guid? pricingPackageId,
-        RequestType requestType)
+        RequestType requestType,
+        Guid? userId = null)
     {
         var now = DateTime.UtcNow;
 
@@ -74,6 +77,7 @@ public sealed class ClientRequest
             pricingPackageId,
             requestType,
             RequestStatus.New,
+            userId,
             now,
             now);
     }
@@ -157,6 +161,8 @@ public sealed class ClientRequest
         Touch();
     }
 
+    
+
     private void SetSelection(
         RequestType requestType,
         Guid? serviceId,
@@ -239,6 +245,20 @@ public sealed class ClientRequest
             throw new DomainException("Message max length is 4000.");
 
         Message = message;
+    }
+
+    private void SetUserId(Guid? userId)
+    {
+        if (userId is null)
+        {
+            UserId = null;
+            return;
+        }
+
+        if (userId.Value == Guid.Empty)
+            throw new DomainException("User id is required.");
+
+        UserId = userId.Value;
     }
 
     public void AssignUser(Guid userId)

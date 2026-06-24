@@ -1,4 +1,5 @@
-﻿using Accounting.Application.Features.Users.Common;
+﻿using Accounting.Application.Features.Portal.Common;
+using Accounting.Application.Features.Users.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,8 @@ namespace Accounting.Application.Abstractions.Identity
         Task<IReadOnlyList<UserDto>> ListAsync(CancellationToken ct);
 
         Task<UserDto?> GetByIdAsync(Guid id, CancellationToken ct);
+
+        Task<PortalUserDto?> GetPortalUserByIdAsync(Guid id, CancellationToken ct);
 
         Task<Guid> CreateAsync(
             string fullName,
@@ -30,6 +33,8 @@ namespace Accounting.Application.Abstractions.Identity
             CancellationToken ct);
 
         Task ActivateAsync(Guid id, CancellationToken ct);
+
+        Task<bool> ExistsAsync(Guid id, CancellationToken ct);
 
         Task DeactivateAsync(Guid id, CancellationToken ct);
 
