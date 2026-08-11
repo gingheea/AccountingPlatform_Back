@@ -26,7 +26,7 @@ namespace Accounting.Application.Features.Services.UpdateService
                 .GreaterThanOrEqualTo(0).WithMessage("SortOrder cannot be negative.");
 
             RuleFor(x => x.Tags)
-               .NotEmpty().WithMessage("Tags list cannot be empty.")
+               .NotNull().WithMessage("Tags collection is required.")
                .Must(tags => tags == null || tags.Count <= 20).WithMessage("You can add a maximum of 20 tags.");
 
 
