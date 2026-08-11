@@ -20,7 +20,7 @@ namespace Accounting.Domain.Entities
 
         public string FileName { get; private set; } = string.Empty;
 
-        public string FileUrl { get; private set; } = string.Empty;
+        public string StorageKey { get; private set; } = string.Empty;
 
         public string ContentType { get; private set; } = string.Empty;
 
@@ -42,7 +42,7 @@ namespace Accounting.Domain.Entities
             Guid userId,
             string title,
             string fileName,
-            string fileUrl,
+            string storageKey,
             string contentType,
             long sizeBytes,
             ClientDocumentCategory category,
@@ -58,8 +58,8 @@ namespace Accounting.Domain.Entities
             if (string.IsNullOrWhiteSpace(fileName))
                 throw new DomainException("File name is required.");
 
-            if (string.IsNullOrWhiteSpace(fileUrl))
-                throw new DomainException("File URL is required.");
+            if (string.IsNullOrWhiteSpace(storageKey))
+                throw new DomainException("Storage key is required.");
 
             if (sizeBytes <= 0)
                 throw new DomainException("File size must be greater than zero.");
@@ -72,7 +72,7 @@ namespace Accounting.Domain.Entities
                 UserId = userId,
                 Title = title.Trim(),
                 FileName = fileName.Trim(),
-                FileUrl = fileUrl.Trim(),
+                StorageKey = storageKey.Trim(),
                 ContentType = contentType.Trim(),
                 SizeBytes = sizeBytes,
                 Category = category,
