@@ -39,8 +39,6 @@ namespace Accounting.Infrastructure.Repositories
         }
 
         public void Remove(ClientRequest clientRequest)
-        {
-            throw new NotImplementedException();
-        }
+            => _dbContext.ClientRequests.Remove(clientRequest);
     }
 }

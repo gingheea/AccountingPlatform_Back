@@ -5,6 +5,7 @@ using Accounting.Application.Features.ClientRequests.ChangeStatus;
 using Accounting.Application.Features.ClientRequests.Common;
 using Accounting.Application.Features.ClientRequests.Complete;
 using Accounting.Application.Features.ClientRequests.CreateClientRequest;
+using Accounting.Application.Features.ClientRequests.DeleteClientRequest;
 using Accounting.Application.Features.ClientRequests.GetClientRequest;
 using Accounting.Application.Features.ClientRequests.ListClientRequests;
 using Accounting.Application.Features.ClientRequests.Reject;
@@ -113,6 +114,17 @@ namespace Accounting.Api.Controllers
         public async Task<ActionResult> RejectClientRequest(Guid id, CancellationToken ct)
         {
             await _mediator.Send(new MarkRejectedCommand(id), ct);
+            return NoContent();
+        }
+
+        [HttpDelete("{id:guid}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult> Delete(Guid id, CancellationToken ct)
+        {
+            _logger.LogInformation("Deleting client request {ClientRequestId}", id);
+
+            await _mediator.Send(new DeleteClientRequestCommand(id), ct);
+
             return NoContent();
         }
     }
