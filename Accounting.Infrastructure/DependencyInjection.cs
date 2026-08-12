@@ -60,10 +60,17 @@ public static class DependencyInjection
 
     private static IServiceCollection AddMessaging(this IServiceCollection services, IConfiguration config)
     {
-        services.Configure<SmtpOptions>(config.GetSection(SmtpOptions.SectionName));
+        services.Configure<BrevoOptions>(config.GetSection(BrevoOptions.SectionName));
         services.Configure<NotificationOptions>(config.GetSection(NotificationOptions.SectionName));
 
-        services.AddScoped<IEmailSender, SmtpEmailSender>();
+        services.AddHttpClient<IEmailSender, BrevoApiEmailSender>((sp, client) =>
+        {
+            var options = sp.GetRequiredService<IOptions<BrevoOptions>>().Value;
+
+            client.Timeout = TimeSpan.FromSeconds(options.TimeoutSeconds);
+            client.DefaultRequestHeaders.Add("api-key", options.ApiKey);
+            client.DefaultRequestHeaders.Add("accept", "application/json");
+        });
 
         return services;
     }
