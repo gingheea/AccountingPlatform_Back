@@ -1,5 +1,6 @@
-﻿using Accounting.Application.Abstractions.Identity;
+using Accounting.Application.Abstractions.Identity;
 using Accounting.Application.Abstractions.Persistence;
+using Accounting.Application.Features.ClientRequests.Events;
 using Accounting.Domain.Entities;
 using MediatR;
 using System;
@@ -15,12 +16,14 @@ namespace Accounting.Application.Features.ClientRequests.CreateClientRequest
         private readonly IClientRequestRepository _clientRequestRepository;
         private readonly ICurrentUserService _currentUserService;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IPublisher _publisher;
 
-        public CreateClientRequestHandler(IClientRequestRepository clientRequestRepository, ICurrentUserService currentUserService, IUnitOfWork unitOfWork)
+        public CreateClientRequestHandler(IClientRequestRepository clientRequestRepository, ICurrentUserService currentUserService, IUnitOfWork unitOfWork, IPublisher publisher)
         {
             _clientRequestRepository = clientRequestRepository;
             _currentUserService = currentUserService;
             _unitOfWork = unitOfWork;
+            _publisher = publisher;
         }
         public async Task<Guid> Handle(CreateClientRequestCommand request, CancellationToken cancellationToken)
         {
@@ -39,6 +42,21 @@ namespace Accounting.Application.Features.ClientRequests.CreateClientRequest
 
             await _clientRequestRepository.AddAsync(clientRequest, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            // Тільки після успішного збереження: інакше можна відправити лист про
+            // заявку, якої в базі немає.
+            await _publisher.Publish(
+                new ClientRequestCreatedNotification(
+                    clientRequest.Id,
+                    clientRequest.FullName,
+                    clientRequest.Email,
+                    clientRequest.Phone,
+                    clientRequest.Message,
+                    clientRequest.RequestType,
+                    clientRequest.ServiceId,
+                    clientRequest.PricingPackageId,
+                    clientRequest.CreatedAtUtc),
+                cancellationToken);
 
             return clientRequest.Id;
         }

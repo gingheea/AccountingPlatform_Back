@@ -1,8 +1,11 @@
 ﻿using Accounting.Application.Abstractions.Auth;
 using Accounting.Application.Abstractions.Identity;
+using Accounting.Application.Abstractions.Messaging;
 using Accounting.Application.Abstractions.Persistence;
 using Accounting.Application.Abstractions.Storage;
+using Accounting.Application.Common.Options;
 using Accounting.Infrastructure.Identity;
+using Accounting.Infrastructure.Messaging;
 using Accounting.Infrastructure.Persistence;
 using Accounting.Infrastructure.Repositories;
 using Accounting.Infrastructure.Storage;
@@ -50,6 +53,17 @@ public static class DependencyInjection
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<AppDbContext>());
 
         services.AddStorage(config);
+        services.AddMessaging(config);
+
+        return services;
+    }
+
+    private static IServiceCollection AddMessaging(this IServiceCollection services, IConfiguration config)
+    {
+        services.Configure<SmtpOptions>(config.GetSection(SmtpOptions.SectionName));
+        services.Configure<NotificationOptions>(config.GetSection(NotificationOptions.SectionName));
+
+        services.AddScoped<IEmailSender, SmtpEmailSender>();
 
         return services;
     }
