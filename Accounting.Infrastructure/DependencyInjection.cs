@@ -25,7 +25,16 @@ public static class DependencyInjection
     {
         var cs = config.GetConnectionString("Default");
 
-        services.AddDbContext<AppDbContext>(opt => opt.UseNpgsql(cs));
+        // Другий параметр UseNpgsql — налаштування саме провайдера Npgsql.
+        // EnableRetryOnFailure сам повторює запит, якщо помилка тимчасова
+        // (обрив зʼєднання, таймаут, недоступний хост). Neon засинає при
+        // простої, і перше звернення після сну падало б без цього.
+        services.AddDbContext<AppDbContext>(opt =>
+            opt.UseNpgsql(cs, npgsql =>
+                npgsql.EnableRetryOnFailure(
+                    maxRetryCount: 5,
+                    maxRetryDelay: TimeSpan.FromSeconds(5),
+                    errorCodesToAdd: null)));
 
         services.AddIdentityCore<AppUser>(opt =>
         {

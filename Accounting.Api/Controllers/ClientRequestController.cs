@@ -1,4 +1,5 @@
-﻿using Accounting.Api.Contracts.ClientRequests;
+﻿using Accounting.Api.Common;
+using Accounting.Api.Contracts.ClientRequests;
 using Accounting.Application.Features.ClientRequests.AssignClientRequestToUser;
 using Accounting.Application.Features.ClientRequests.ChangeAdminNote;
 using Accounting.Application.Features.ClientRequests.ChangeStatus;
@@ -12,6 +13,7 @@ using Accounting.Application.Features.ClientRequests.Reject;
 using Accounting.Application.Features.ClientRequests.UnassignClientRequestUser;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -52,7 +54,8 @@ namespace Accounting.Api.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<ActionResult<Guid>> Create([FromBody] CreateClientRequestRequest request, CancellationToken ct) 
+        [EnableRateLimiting(RateLimitPolicies.PublicClientRequests)]
+        public async Task<ActionResult<Guid>> Create([FromBody] CreateClientRequestRequest request, CancellationToken ct)
         {
             var clientRequestId = await _mediator.Send(new CreateClientRequestCommand(request.FullName, request.Email, request.PhoneNumber, request.Message, request.ServiceId, request.PricingPackageId, request.RequestType), ct);
             return CreatedAtAction(nameof(GetById), new { id = clientRequestId }, new { id = clientRequestId });
