@@ -28,6 +28,8 @@ namespace Accounting.Infrastructure.Persistence
 
         public DbSet<ClientSubscription> ClientSubscriptions => Set<ClientSubscription>();
 
+        public DbSet<NewsletterSubscriber> NewsletterSubscribers => Set<NewsletterSubscriber>();
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

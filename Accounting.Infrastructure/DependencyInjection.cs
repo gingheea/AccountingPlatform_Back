@@ -59,6 +59,7 @@ public static class DependencyInjection
         services.AddScoped<IPricingPackageRepository, PricingPackageRepository>();
         services.AddScoped<IClientDocumentRepository, ClientDocumentRepository>();
         services.AddScoped<IClientSubscriptionRepository, ClientSubscriptionRepository>();
+        services.AddScoped<INewsletterSubscriberRepository, NewsletterSubscriberRepository>();
         services.AddScoped<IUserManagementService, UserManagementService>();
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<AppDbContext>());
 
@@ -73,14 +74,19 @@ public static class DependencyInjection
         services.Configure<BrevoOptions>(config.GetSection(BrevoOptions.SectionName));
         services.Configure<NotificationOptions>(config.GetSection(NotificationOptions.SectionName));
 
-        services.AddHttpClient<IEmailSender, BrevoApiEmailSender>((sp, client) =>
+        // Обидва клієнти ходять в один API з тими самими заголовками,
+        // тому налаштування спільне.
+        static Action<IServiceProvider, HttpClient> configureBrevo() => (sp, client) =>
         {
             var options = sp.GetRequiredService<IOptions<BrevoOptions>>().Value;
 
             client.Timeout = TimeSpan.FromSeconds(options.TimeoutSeconds);
             client.DefaultRequestHeaders.Add("api-key", options.ApiKey);
             client.DefaultRequestHeaders.Add("accept", "application/json");
-        });
+        };
+
+        services.AddHttpClient<IEmailSender, BrevoApiEmailSender>(configureBrevo());
+        services.AddHttpClient<INewsletterContactClient, BrevoContactClient>(configureBrevo());
 
         return services;
     }

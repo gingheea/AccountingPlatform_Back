@@ -17,5 +17,11 @@ namespace Accounting.Infrastructure.Messaging
         public string FromName { get; init; } = string.Empty;
 
         public int TimeoutSeconds { get; init; } = 15;
+
+        /// <summary>
+        /// Номер списку розсилки в Brevo (Contacts → Lists). Не заданий —
+        /// підписники зберігаються лише в нашій базі, без падінь.
+        /// </summary>
+        public int? NewsletterListId { get; init; }
     }
 }

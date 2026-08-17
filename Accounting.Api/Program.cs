@@ -130,6 +130,17 @@ builder.Services.AddRateLimiter(options =>
                 QueueLimit = 0
             }));
 
+    options.AddPolicy(RateLimitPolicies.PublicNewsletter, httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                // Підписка дешевша за заявку, тож ліміт м'якший.
+                PermitLimit = 10,
+                Window = TimeSpan.FromMinutes(10),
+                QueueLimit = 0
+            }));
+
     options.OnRejected = async (context, ct) =>
     {
         context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
@@ -145,7 +156,7 @@ builder.Services.AddRateLimiter(options =>
         await context.HttpContext.Response.WriteAsJsonAsync(new
         {
             type = "too_many_requests",
-            title = "Забагато заявок з вашої адреси. Спробуйте, будь ласка, за 10 хвилин.",
+            title = "Забагато спроб з вашої адреси. Спробуйте, будь ласка, за 10 хвилин.",
             status = StatusCodes.Status429TooManyRequests
         }, ct);
     };
