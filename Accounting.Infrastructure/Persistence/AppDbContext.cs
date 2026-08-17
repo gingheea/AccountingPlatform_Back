@@ -26,6 +26,8 @@ namespace Accounting.Infrastructure.Persistence
 
         public DbSet<ClientDocument> ClientDocuments => Set<ClientDocument>();
 
+        public DbSet<ClientSubscription> ClientSubscriptions => Set<ClientSubscription>();
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

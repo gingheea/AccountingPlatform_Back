@@ -5,6 +5,8 @@ using Accounting.Application.Features.ClientDocuments.GetDownloadUrl;
 using Accounting.Application.Features.ClientDocuments.ListDocuments;
 using Accounting.Application.Features.ClientDocuments.UploadDocument;
 using Accounting.Application.Features.ClientRequests.Common;
+using Accounting.Application.Features.ClientSubscriptions.Common;
+using Accounting.Application.Features.ClientSubscriptions.ListSubscriptions;
 using Accounting.Application.Features.Portal.Common;
 using Accounting.Application.Features.Portal.GetCurrentUser;
 using Accounting.Application.Features.Portal.ListClientRequests;
@@ -53,6 +55,19 @@ namespace Accounting.Api.Controllers
             var requests = await _mediator.Send(new ListMyClientRequestsQuery(), ct);
 
             return Ok(requests);
+        }
+
+        [HttpGet("subscriptions")]
+        [ProducesResponseType(typeof(IReadOnlyList<ClientSubscriptionDto>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<IReadOnlyList<ClientSubscriptionDto>>> MySubscriptions(
+            CancellationToken ct)
+        {
+            // Id підставляємо з токена, а не з запиту — інакше клієнт міг би
+            // попросити чужі дані, просто змінивши параметр.
+            var subscriptions = await _mediator.Send(
+                new ListClientSubscriptionsQuery(CurrentUserId(), Status: null), ct);
+
+            return Ok(subscriptions);
         }
 
         [HttpGet("documents")]
