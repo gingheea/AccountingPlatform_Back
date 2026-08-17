@@ -1,4 +1,6 @@
+using Accounting.Api.Contracts.Auth;
 using Accounting.Api.Contracts.ClientDocuments;
+using Accounting.Application.Features.Portal.ChangePassword;
 using Accounting.Application.Abstractions.Identity;
 using Accounting.Application.Features.ClientDocuments.Common;
 using Accounting.Application.Features.ClientDocuments.GetDownloadUrl;
@@ -55,6 +57,17 @@ namespace Accounting.Api.Controllers
             var requests = await _mediator.Send(new ListMyClientRequestsQuery(), ct);
 
             return Ok(requests);
+        }
+
+        [HttpPost("change-password")]
+        public async Task<ActionResult> ChangePassword(
+            [FromBody] ChangeOwnPasswordRequest request,
+            CancellationToken ct)
+        {
+            await _mediator.Send(
+                new ChangeOwnPasswordCommand(request.CurrentPassword, request.NewPassword), ct);
+
+            return NoContent();
         }
 
         [HttpGet("subscriptions")]

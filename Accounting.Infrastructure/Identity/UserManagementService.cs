@@ -1,4 +1,5 @@
 ﻿using Accounting.Application.Abstractions.Identity;
+using Accounting.Application.Common.Errors;
 using Accounting.Application.Features.Portal.Common;
 using Accounting.Application.Features.Users.Common;
 using Microsoft.AspNetCore.Identity;
@@ -223,6 +224,76 @@ public sealed class UserManagementService : IUserManagementService
                     string.Join("; ", addResult.Errors.Select(x => x.Description))
                 );
         }
+    }
+
+    public async Task ChangeOwnPasswordAsync(
+        Guid id,
+        string currentPassword,
+        string newPassword,
+        CancellationToken ct)
+    {
+        var user = await _userManager.FindByIdAsync(id.ToString());
+
+        if (user is null)
+            throw new InvalidOperationException("User not found.");
+
+        // ChangePasswordAsync сам звіряє старий пароль — окремої перевірки
+        // не робимо, інакше вона була б другим місцем, де можна помилитись.
+        var result = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
+
+        if (result.Succeeded)
+            return;
+
+        // Identity пише свої помилки англійською; найчастіший випадок
+        // перекладаємо, щоб людина одразу зрозуміла, що саме не так.
+        if (result.Errors.Any(x => x.Code == "PasswordMismatch"))
+            throw new BadRequestException("Поточний пароль неправильний.");
+
+        throw new BadRequestException(
+            string.Join("; ", result.Errors.Select(x => x.Description)));
+    }
+
+    public async Task<PasswordResetTicket?> CreatePasswordResetTicketAsync(
+        string email,
+        CancellationToken ct)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+
+        // Немає такого користувача або він вимкнений — повертаємо null.
+        // Той, хто викликає, все одно відповість «лист надіслано»: інакше
+        // за формою відновлення можна було б перебирати, чиї акаунти існують.
+        if (user is null || !user.IsActive)
+            return null;
+
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+        return new PasswordResetTicket(user.Email!, user.FullName ?? string.Empty, token);
+    }
+
+    public async Task ResetPasswordWithTokenAsync(
+        string email,
+        string token,
+        string newPassword,
+        CancellationToken ct)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+
+        if (user is null || !user.IsActive)
+            throw new BadRequestException("Посилання недійсне або застаріле.");
+
+        var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
+
+        if (result.Succeeded)
+            return;
+
+        // «Недійсний токен» окремо: посилання могли використати двічі або
+        // воно застаріло — це не те саме, що слабкий пароль.
+        if (result.Errors.Any(x => x.Code == "InvalidToken"))
+            throw new BadRequestException(
+                "Посилання недійсне або застаріле. Запросіть відновлення ще раз.");
+
+        throw new BadRequestException(
+            string.Join("; ", result.Errors.Select(x => x.Description)));
     }
 
     public async Task ResetPasswordAsync(

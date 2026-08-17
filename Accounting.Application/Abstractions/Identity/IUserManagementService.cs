@@ -43,6 +43,26 @@ namespace Accounting.Application.Abstractions.Identity
             IReadOnlyCollection<string> roles,
             CancellationToken ct);
 
+        /// <summary>Зміна власного пароля: потребує підтвердження старого.</summary>
+        Task ChangeOwnPasswordAsync(
+            Guid id,
+            string currentPassword,
+            string newPassword,
+            CancellationToken ct);
+
+        /// <summary>
+        /// Готує одноразовий код для відновлення пароля. Повертає null, якщо
+        /// такої пошти немає — щоб той, хто викликає, не мусив розрізняти
+        /// випадки й ненароком видати, чи існує акаунт.
+        /// </summary>
+        Task<PasswordResetTicket?> CreatePasswordResetTicketAsync(string email, CancellationToken ct);
+
+        Task ResetPasswordWithTokenAsync(
+            string email,
+            string token,
+            string newPassword,
+            CancellationToken ct);
+
         Task ResetPasswordAsync(
             Guid id,
             string newPassword,

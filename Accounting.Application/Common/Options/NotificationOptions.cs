@@ -13,5 +13,11 @@ namespace Accounting.Application.Common.Options
 
         /// <summary>Посилання на список заявок в адмінці, щоб з листа можна було одразу перейти.</summary>
         public string AdminRequestsUrl { get; init; } = string.Empty;
+
+        /// <summary>
+        /// Адреса сайту, від якої будується посилання на встановлення нового
+        /// пароля. Бек не знає маршрутів фронту, тож базу задаємо конфігом.
+        /// </summary>
+        public string SiteUrl { get; init; } = string.Empty;
     }
 }

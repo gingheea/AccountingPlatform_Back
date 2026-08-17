@@ -37,6 +37,17 @@ public class ExceptionHandlingMiddleware : IMiddleware
                 })
             });
         }
+        catch (BadRequestException ex)
+        {
+            _logger.LogWarning(ex, "Bad request");
+
+            await WriteResponse(context, HttpStatusCode.BadRequest, new
+            {
+                type = "bad_request",
+                title = ex.Message,
+                status = 400
+            });
+        }
         catch (NotFoundException ex)
         {
             await WriteResponse(context, HttpStatusCode.NotFound, new
