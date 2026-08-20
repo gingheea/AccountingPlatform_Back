@@ -1,4 +1,5 @@
 using Accounting.Domain.Entities;
+using Accounting.Infrastructure.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -20,6 +21,13 @@ namespace Accounting.Infrastructure.Persistence.Configurations
             b.Property(x => x.ModerationNote).HasMaxLength(500);
             b.Property(x => x.CreatedAtUtc).IsRequired();
             b.Property(x => x.ModeratedAtUtc);
+
+            // Видаляють клієнта — зникає і його відгук. Без цього звʼязку відгук
+            // лишився б у базі з посиланням на неіснуючого користувача.
+            b.HasOne<AppUser>()
+                .WithMany()
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             // Один відгук на клієнта. Унікальний індекс, а не перевірка в коді:
             // два одночасні запити не побачили б один одного і створили б дубль.

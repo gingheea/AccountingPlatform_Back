@@ -14,21 +14,25 @@ namespace Accounting.Application.Features.Users.ResetUserPassword
         {
             RuleFor(x => x.Id)
                 .NotEmpty()
-                .WithMessage("User id is required.");
+                .WithMessage("Не вказано користувача.");
 
+            // Правила складності мають збігатися з політикою Identity
+            // (Infrastructure/DependencyInjection.cs): 8 символів, велика,
+            // мала й цифра. Спецсимвол там НЕ вимагається — а тут колись
+            // вимагався, і адмін не міг задати пароль, який система сама
+            // вважає припустимим.
             RuleFor(x => x.NewPassword)
                 .NotEmpty()
-                .WithMessage("New password is required.")
+                .WithMessage("Введіть новий пароль.")
                 .MinimumLength(8)
-                .WithMessage("Password must be at least 8 characters long.")
+                .WithMessage("Пароль має містити щонайменше 8 символів.")
+                .MaximumLength(100)
                 .Matches("[A-Z]")
-                .WithMessage("Password must contain at least one uppercase letter.")
+                .WithMessage("Пароль має містити щонайменше одну велику літеру.")
                 .Matches("[a-z]")
-                .WithMessage("Password must contain at least one lowercase letter.")
+                .WithMessage("Пароль має містити щонайменше одну малу літеру.")
                 .Matches("[0-9]")
-                .WithMessage("Password must contain at least one digit.")
-                .Matches("[^a-zA-Z0-9]")
-                .WithMessage("Password must contain at least one special character.");
+                .WithMessage("Пароль має містити щонайменше одну цифру.");
         }
     }
 }

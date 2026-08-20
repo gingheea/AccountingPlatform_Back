@@ -38,6 +38,12 @@ namespace Accounting.Application.Abstractions.Identity
 
         Task DeactivateAsync(Guid id, CancellationToken ct);
 
+        /// <summary>
+        /// Видаляє акаунт назовсім. Повʼязані документи, обслуговування й відгук
+        /// приберуться разом із ним — про це подбають звʼязки в базі.
+        /// </summary>
+        Task DeleteAsync(Guid id, CancellationToken ct);
+
         Task ChangeRolesAsync(
             Guid id,
             IReadOnlyCollection<string> roles,

@@ -79,6 +79,22 @@ namespace Accounting.Api.Controllers.Identity
             return NoContent();
         }
 
+        /// <summary>
+        /// Видаляє акаунт назовсім разом із його документами, обслуговуванням
+        /// і відгуком. Заявки лишаються — вони частина історії роботи, тому
+        /// в них лише зникає посилання на клієнта.
+        /// </summary>
+        [HttpDelete("{id:guid}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult> DeleteUser(Guid id, CancellationToken ct)
+        {
+            _logger.LogInformation("Deleting user with id {id}", id);
+
+            await _mediator.Send(new Application.Features.Users.DeleteUser.DeleteUserRequest(id), ct);
+
+            return NoContent();
+        }
+
         [HttpPatch("{id:guid}/roles")]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult> UpdateUserRoles(Guid id, Contracts.Identity.ChangeUserRolesRequest request, CancellationToken ct)

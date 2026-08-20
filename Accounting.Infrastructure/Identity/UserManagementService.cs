@@ -179,6 +179,20 @@ public sealed class UserManagementService : IUserManagementService
             );
     }
 
+    public async Task DeleteAsync(Guid id, CancellationToken ct)
+    {
+        var user = await _userManager.FindByIdAsync(id.ToString());
+
+        if (user is null)
+            throw new NotFoundException($"User {id} was not found.");
+
+        var result = await _userManager.DeleteAsync(user);
+
+        if (!result.Succeeded)
+            throw new BadRequestException(
+                string.Join("; ", result.Errors.Select(x => x.Description)));
+    }
+
     public async Task DeactivateAsync(Guid id, CancellationToken ct)
     {
         var user = await _userManager.FindByIdAsync(id.ToString());
