@@ -62,6 +62,7 @@ public static class DependencyInjection
         services.AddScoped<IClientDocumentRepository, ClientDocumentRepository>();
         services.AddScoped<IClientSubscriptionRepository, ClientSubscriptionRepository>();
         services.AddScoped<INewsletterSubscriberRepository, NewsletterSubscriberRepository>();
+        services.AddScoped<ITestimonialRepository, TestimonialRepository>();
         services.AddScoped<IUserManagementService, UserManagementService>();
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<AppDbContext>());
 

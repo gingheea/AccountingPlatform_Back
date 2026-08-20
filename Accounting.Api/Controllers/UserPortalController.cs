@@ -1,5 +1,9 @@
 using Accounting.Api.Contracts.Auth;
 using Accounting.Api.Contracts.ClientDocuments;
+using Accounting.Api.Contracts.Testimonials;
+using Accounting.Application.Features.Testimonials.Common;
+using Accounting.Application.Features.Testimonials.GetMine;
+using Accounting.Application.Features.Testimonials.Submit;
 using Accounting.Application.Features.Portal.ChangePassword;
 using Accounting.Application.Abstractions.Identity;
 using Accounting.Application.Features.ClientDocuments.Common;
@@ -142,6 +146,31 @@ namespace Accounting.Api.Controllers
                 new GetDocumentDownloadUrlQuery(id, CurrentUserId()), ct);
 
             return Ok(download);
+        }
+
+        /// <summary>Власний відгук клієнта разом зі станом розгляду. null — ще не писав.</summary>
+        [HttpGet("testimonial")]
+        [ProducesResponseType(typeof(TestimonialDto), StatusCodes.Status200OK)]
+        public async Task<ActionResult<TestimonialDto?>> MyTestimonial(CancellationToken ct)
+        {
+            var testimonial = await _mediator.Send(new GetMyTestimonialQuery(), ct);
+
+            return Ok(testimonial);
+        }
+
+        /// <summary>
+        /// Надіслати або переписати свій відгук. Публікується не одразу —
+        /// спершу його має схвалити бухгалтер.
+        /// </summary>
+        [HttpPost("testimonial")]
+        public async Task<ActionResult<Guid>> SubmitTestimonial(
+            [FromBody] SubmitTestimonialRequest request,
+            CancellationToken ct)
+        {
+            var id = await _mediator.Send(
+                new SubmitTestimonialCommand(request.Content, request.AuthorRole), ct);
+
+            return Ok(new { id });
         }
 
         private Guid CurrentUserId()
