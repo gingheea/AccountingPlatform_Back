@@ -1,4 +1,5 @@
 using Accounting.Api.Contracts.Testimonials;
+using Accounting.Application.Common;
 using Accounting.Application.Features.Testimonials.Common;
 using Accounting.Application.Features.Testimonials.ListForAdmin;
 using Accounting.Application.Features.Testimonials.ListPublished;
@@ -21,17 +22,22 @@ namespace Accounting.Api.Controllers
             _mediator = mediator;
         }
 
-        /// <summary>Схвалені відгуки для публічних сторінок.</summary>
+        /// <summary>
+        /// Схвалені відгуки для публічних сторінок, посторінково.
+        /// Повертає ще й загальну кількість — щоб сторінка знала,
+        /// чи лишилось що довантажувати.
+        /// </summary>
         [HttpGet("published")]
         [AllowAnonymous]
-        [ProducesResponseType(typeof(IReadOnlyList<PublicTestimonialDto>), StatusCodes.Status200OK)]
-        public async Task<ActionResult<IReadOnlyList<PublicTestimonialDto>>> Published(
+        [ProducesResponseType(typeof(PagedResult<PublicTestimonialDto>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<PagedResult<PublicTestimonialDto>>> Published(
+            [FromQuery] int skip = 0,
             [FromQuery] int take = 6,
             CancellationToken ct = default)
         {
-            var testimonials = await _mediator.Send(new ListPublishedTestimonialsQuery(take), ct);
+            var page = await _mediator.Send(new ListPublishedTestimonialsQuery(skip, take), ct);
 
-            return Ok(testimonials);
+            return Ok(page);
         }
 
         /// <summary>Усі відгуки з їхнім станом — для розгляду в адмінці.</summary>
