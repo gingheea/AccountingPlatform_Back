@@ -5,7 +5,9 @@ using Accounting.Application.Abstractions.Persistence;
 using Accounting.Application.Abstractions.Storage;
 using Accounting.Application.Common.Options;
 using Accounting.Infrastructure.Identity;
+using Accounting.Application.Abstractions.News;
 using Accounting.Infrastructure.Messaging;
+using Accounting.Infrastructure.News;
 using Accounting.Infrastructure.Persistence;
 using Accounting.Infrastructure.Repositories;
 using Accounting.Infrastructure.Storage;
@@ -65,6 +67,27 @@ public static class DependencyInjection
 
         services.AddStorage(config);
         services.AddMessaging(config);
+        services.AddNewsFeed(config);
+
+        return services;
+    }
+
+    private static IServiceCollection AddNewsFeed(this IServiceCollection services, IConfiguration config)
+    {
+        services.Configure<NewsFeedOptions>(config.GetSection(NewsFeedOptions.SectionName));
+
+        // Кеш новин живе в памʼяті самого застосунку.
+        services.AddMemoryCache();
+
+        services.AddHttpClient<INewsFeedClient, SyndicationNewsFeedClient>((sp, client) =>
+        {
+            var options = sp.GetRequiredService<IOptions<NewsFeedOptions>>().Value;
+
+            client.Timeout = TimeSpan.FromSeconds(options.TimeoutSeconds);
+
+            // Частина сайтів відмовляє клієнтам без User-Agent, вважаючи їх ботами.
+            client.DefaultRequestHeaders.Add("User-Agent", "AccountingPlatform/1.0 (+feed reader)");
+        });
 
         return services;
     }
