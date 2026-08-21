@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 namespace Accounting.Application.Features.Testimonials.Moderate
 {
     /// <summary>
-    /// Спільне «дістати або сказати, що немає». Три обробники нижче роблять
-    /// це однаково, і дублювати рядок з винятком у кожному — зайве.
+    /// Shared "load it or say it is missing". The three handlers below do this
+    /// identically, and repeating the throw in each of them is pointless.
     /// </summary>
     internal static class TestimonialLoader
     {
@@ -81,8 +81,8 @@ namespace Accounting.Application.Features.Testimonials.Moderate
         {
             var testimonial = await TestimonialLoader.LoadAsync(_repository, request.Id, ct);
 
-            // Видаляємо назовсім: після цього клієнт зможе написати новий відгук,
-            // бо унікальний індекс на UserId звільниться.
+            // A hard delete: afterwards the client can write a new testimonial,
+            // because the unique index on UserId is freed.
             _repository.Remove(testimonial);
 
             await _unitOfWork.SaveChangesAsync(ct);

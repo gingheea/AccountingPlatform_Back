@@ -3,11 +3,11 @@ using System;
 namespace Accounting.Application.Abstractions.News
 {
     /// <summary>
-    /// Одна новина зі стрічки джерела.
+    /// A single article from the source feed.
     ///
-    /// Свідомо зберігаємо лише заголовок, короткий опис і посилання: повний
-    /// текст належить джерелу, і копіювати його ми не маємо права. Саме так
-    /// стрічки й задумані — анонс у нас, читання в них.
+    /// Deliberately only title, short summary and link: the full text belongs to
+    /// the source and we have no right to copy it. That is how feeds are meant
+    /// to work: the teaser here, the reading there.
     /// </summary>
     public sealed record NewsArticle(
         string Title,

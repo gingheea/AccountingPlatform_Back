@@ -18,8 +18,8 @@ namespace Accounting.Infrastructure.Persistence.Configurations
             b.Property(x => x.SubscribedAtUtc).IsRequired();
             b.Property(x => x.UnsubscribedAtUtc);
 
-            // Унікальний індекс — щоб дубль не міг зʼявитись навіть тоді, коли
-            // два запити прийшли одночасно й обидва не побачили один одного.
+            // A unique index, so a duplicate cannot appear even when two requests
+            // arrive at once and neither sees the other.
             b.HasIndex(x => x.Email).IsUnique();
 
             b.HasIndex(x => x.IsActive);

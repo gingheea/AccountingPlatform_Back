@@ -21,14 +21,14 @@ namespace Accounting.Infrastructure.Persistence.Configurations
             b.Property(x => x.CreatedAtUtc).IsRequired();
             b.Property(x => x.UpdatedAtUtc).IsRequired();
 
-            // Видаляється клієнт — зникає й запис про його обслуговування.
+            // Delete a client and the record of their engagement goes too.
             b.HasOne<AppUser>()
                 .WithMany()
                 .HasForeignKey(x => x.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // А от послугу чи пакет видаляти, стираючи історію обслуговування,
-            // не можна — тому лише обнуляємо посилання.
+            // A service or package, however, must not erase engagement history when
+            // deleted, so only the reference is nulled.
             b.HasOne<Service>()
                 .WithMany()
                 .HasForeignKey(x => x.ServiceId)

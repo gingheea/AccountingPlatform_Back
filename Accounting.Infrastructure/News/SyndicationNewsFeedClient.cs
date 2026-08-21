@@ -37,8 +37,8 @@ namespace Accounting.Infrastructure.News
 
         public async Task<IReadOnlyList<NewsArticle>> GetLatestAsync(int take, CancellationToken ct)
         {
-            // Кеш зберігає весь список, а вже потім відрізаємо потрібну кількість.
-            // Інакше запит на 3 новини й на 9 були б різними ключами кешу.
+            // The cache holds the whole list and only then we slice off what was asked.
+            // Otherwise asking for 3 and for 9 articles would be two different cache keys.
             var all = await GetOrLoadAsync(ct);
 
             return all.Take(take).ToList();
@@ -57,13 +57,13 @@ namespace Accounting.Infrastructure.News
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
-                // Чуже джерело може лежати, віддати сміття чи просто не відповісти.
-                // Це не привід валити нашу сторінку — повертаємо порожній список,
-                // а фронт покаже «новини тимчасово недоступні».
+                // A third-party source can be down, return garbage or simply not answer.
+                // That is no reason to break our page: return an empty list and let the
+                // frontend show "news temporarily unavailable".
                 _logger.LogError(ex, "Failed to load the news feed from {Url}.", _options.Url);
 
-                // Коротка пауза перед наступною спробою, щоб не бити джерело
-                // на кожен перезавантажений браузером запит.
+                // A short pause before the next attempt, so the source is not hit on every
+                // browser refresh.
                 _cache.Set(CacheKey, Array.Empty<NewsArticle>() as IReadOnlyList<NewsArticle>,
                     TimeSpan.FromMinutes(2));
 
@@ -79,8 +79,8 @@ namespace Accounting.Infrastructure.News
         {
             await using var stream = await _httpClient.GetStreamAsync(_options.Url, ct);
 
-            // DtdProcessing = Prohibit закриває XXE — класичну атаку, коли чужий
-            // XML описує сутність, що читає файл з нашого диска.
+            // DtdProcessing = Prohibit closes off XXE, the classic attack where foreign
+            // XML declares an entity that reads a file from our disk.
             var settings = new XmlReaderSettings
             {
                 DtdProcessing = DtdProcessing.Prohibit,
@@ -90,9 +90,9 @@ namespace Accounting.Infrastructure.News
 
             using var reader = XmlReader.Create(stream, settings);
 
-            // Одна й та сама Load розбирає і <rss><item>, і <feed><entry>.
-            // Саме заради цього взято System.ServiceModel.Syndication —
-            // руками довелося б писати два різні парсери.
+            // The same Load parses both <rss><item> and <feed><entry>.
+            // That is exactly why System.ServiceModel.Syndication is used here:
+            // by hand it would take two separate parsers.
             var feed = SyndicationFeed.Load(reader);
 
             if (feed is null)
@@ -111,8 +111,8 @@ namespace Accounting.Infrastructure.News
             var url = item.Links.FirstOrDefault()?.Uri?.ToString();
             var title = Clean(item.Title?.Text);
 
-            // Без заголовка чи посилання картка непридатна — краще пропустити запис,
-            // ніж показати порожній прямокутник.
+            // Without a title or a link the card is useless: better to skip the entry
+            // than to show an empty rectangle.
             if (string.IsNullOrWhiteSpace(url) || string.IsNullOrWhiteSpace(title))
                 return null;
 
@@ -120,7 +120,7 @@ namespace Accounting.Infrastructure.News
                 ?? Clean((item.Content as TextSyndicationContent)?.Text)
                 ?? string.Empty;
 
-            // У RSS дата лежить у PublishDate, в Atom частіше в LastUpdatedTime.
+            // In RSS the date sits in PublishDate, in Atom usually in LastUpdatedTime.
             var published = item.PublishDate != default
                 ? item.PublishDate
                 : item.LastUpdatedTime;
@@ -135,9 +135,9 @@ namespace Accounting.Infrastructure.News
         }
 
         /// <summary>
-        /// Описи у стрічках приходять з HTML-розміткою всередині. Показувати її
-        /// як текст не можна, вставляти на сторінку як HTML — тим паче: це чужий
-        /// вміст, і він міг би принести скрипт.
+        /// Feed summaries arrive with HTML markup inside. Showing it as text is
+        /// wrong, and injecting it as HTML is worse: it is foreign content and
+        /// could carry a script.
         /// </summary>
         private static string? Clean(string? raw)
         {
@@ -156,7 +156,7 @@ namespace Accounting.Infrastructure.News
             if (text.Length <= maxLength)
                 return text;
 
-            // Ріжемо по останньому пробілу, щоб не обірвати слово посередині.
+            // Cut at the last space so a word is not chopped in half.
             var cut = text.LastIndexOf(' ', maxLength - 1);
 
             if (cut < maxLength / 2)
@@ -177,8 +177,8 @@ namespace Accounting.Infrastructure.News
         };
 
         /// <summary>
-        /// Стрічка не проставляє &lt;category&gt;, але рубрика видно в адресі:
-        /// news.dtkt.ua/<b>taxation</b>/pdv/113916-... Беремо перший сегмент.
+        /// The feed sets no &lt;category&gt;, but the section shows in the URL:
+        /// news.dtkt.ua/<b>taxation</b>/pdv/113916-... We take the first segment.
         /// </summary>
         private static string ResolveCategory(SyndicationItem item, string url)
         {

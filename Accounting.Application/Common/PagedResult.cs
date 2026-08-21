@@ -3,12 +3,12 @@ using System.Collections.Generic;
 namespace Accounting.Application.Common
 {
     /// <summary>
-    /// Сторінка даних разом із загальною кількістю.
+    /// One page of data together with the overall count.
     ///
-    /// Саме Total робить сторінку корисною: без нього фронт не знає, чи є
-    /// що вантажити далі, і мусив би здогадуватись — «прийшло менше, ніж
-    /// просили, отже кінець». Це працює, доки хтось не видалить запис
-    /// між двома запитами.
+    /// Total is what makes a page useful: without it the frontend cannot tell
+    /// whether anything is left and would have to guess ("fewer came back than
+    /// asked for, so that's the end"). That guess breaks as soon as a row is
+    /// deleted between two requests.
     /// </summary>
     public sealed record PagedResult<T>(IReadOnlyList<T> Items, int Total);
 }

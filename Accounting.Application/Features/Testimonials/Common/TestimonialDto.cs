@@ -4,10 +4,9 @@ using System;
 namespace Accounting.Application.Features.Testimonials.Common
 {
     /// <summary>
-    /// Те, що бачить відвідувач сайту. Ні UserId, ні статусу, ні службових
-    /// нотаток тут немає — назовні віддаємо тільки те, що справді потрібно
-    /// показати. Зайве поле в DTO це витік даних, навіть якщо фронт його
-    /// не малює.
+    /// What a site visitor sees. No UserId, no status, no internal notes: only
+    /// what genuinely needs to be shown goes out. An extra field in a DTO is
+    /// a data leak even when the frontend never renders it.
     /// </summary>
     public sealed record PublicTestimonialDto(
         Guid Id,
@@ -17,7 +16,7 @@ namespace Accounting.Application.Features.Testimonials.Common
         DateTime CreatedAtUtc
     );
 
-    /// <summary>Повний вигляд — для адмінки й для автора у власному кабінеті.</summary>
+    /// <summary>The full view: for the admin panel and for the author's own portal.</summary>
     public sealed record TestimonialDto(
         Guid Id,
         Guid UserId,

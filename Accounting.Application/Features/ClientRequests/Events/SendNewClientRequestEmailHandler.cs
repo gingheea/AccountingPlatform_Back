@@ -57,7 +57,7 @@ namespace Accounting.Application.Features.ClientRequests.Events
                         Subject: subject,
                         HtmlBody: BuildHtmlBody(notification, subject),
                         TextBody: BuildTextBody(notification),
-                        // Бухгалтер тисне «Відповісти» — і пише одразу клієнту.
+                        // The accountant hits "Reply" and writes straight to the client.
                         ReplyTo: notification.Email,
                         ReplyToName: notification.FullName),
                     ct);
@@ -67,9 +67,9 @@ namespace Accounting.Application.Features.ClientRequests.Events
             }
             catch (Exception ex)
             {
-                // Заявка вже збережена. Якщо тут прокинути виняток далі, MediatR
-                // поверне його в CreateClientRequestHandler, клієнт побачить 500
-                // і надішле форму ще раз — у базі з'явиться дубль.
+                // The request is already saved. Rethrowing here would send the exception
+                // back through MediatR into CreateClientRequestHandler, the client would
+                // see a 500, resubmit the form, and a duplicate would appear.
                 _logger.LogError(
                     ex,
                     "Failed to send new client request email for {RequestId}.",
@@ -178,8 +178,8 @@ namespace Accounting.Application.Features.ClientRequests.Events
             _ => "загальна консультація"
         };
 
-        // Дані прийшли з публічної форми — без екранування хтось вставить у поле
-        // імені HTML, і лист поїде зламаним або з чужим посиланням.
+        // The data came from a public form: without escaping someone would paste
+        // HTML into the name field and the email would arrive broken or spoofed.
         private static string Encode(string value) => WebUtility.HtmlEncode(value);
     }
 }

@@ -28,7 +28,7 @@ namespace Accounting.Application.Features.Testimonials.ListForAdmin
             if (request.Status is not null)
                 query = query.Where(x => x.Status == request.Status.Value);
 
-            // Найновіші зверху: бухгалтер відкриває список, щоб розглянути свіже.
+            // Newest first: the accountant opens the list to review what just arrived.
             return await query
                 .OrderByDescending(x => x.CreatedAtUtc)
                 .ThenBy(x => x.Id)

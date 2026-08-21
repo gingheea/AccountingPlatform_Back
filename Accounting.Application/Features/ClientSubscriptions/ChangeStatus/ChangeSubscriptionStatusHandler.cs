@@ -29,7 +29,7 @@ namespace Accounting.Application.Features.ClientSubscriptions.ChangeStatus
             if (subscription is null)
                 throw new NotFoundException($"Subscription with id {request.Id} not found.");
 
-            // Які переходи дозволені — вирішує сама сутність, а не цей обробник.
+            // Which transitions are allowed is decided by the entity, not by this handler.
             Action action = request.Status switch
             {
                 SubscriptionStatus.Active => subscription.Resume,

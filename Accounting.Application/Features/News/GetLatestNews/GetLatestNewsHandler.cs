@@ -24,8 +24,8 @@ namespace Accounting.Application.Features.News.GetLatestNews
             GetLatestNewsQuery request,
             CancellationToken ct)
         {
-            // Take приходить із рядка запиту, тобто ним керує будь-хто ззовні.
-            // Обмежуємо самі, щоб ?take=100000 не був способом нас навантажити.
+            // Take arrives in the query string, meaning anyone outside controls it.
+            // We cap it ourselves so ?take=100000 is not a way to load us down.
             var take = Math.Clamp(request.Take, 1, MaxTake);
 
             var articles = await _feedClient.GetLatestAsync(take, ct);

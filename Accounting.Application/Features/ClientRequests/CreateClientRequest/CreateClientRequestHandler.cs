@@ -43,8 +43,8 @@ namespace Accounting.Application.Features.ClientRequests.CreateClientRequest
             await _clientRequestRepository.AddAsync(clientRequest, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            // Тільки після успішного збереження: інакше можна відправити лист про
-            // заявку, якої в базі немає.
+            // Only after a successful save: otherwise an email could go out about
+            // a request that is not in the database.
             await _publisher.Publish(
                 new ClientRequestCreatedNotification(
                     clientRequest.Id,

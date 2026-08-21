@@ -18,16 +18,16 @@ using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// На Render застосунок стоїть за проксі, тому RemoteIpAddress для ВСІХ
-// відвідувачів дорівнював би адресі проксі. Без цього обмеження частоти
-// рахувало б усіх як одного клієнта й після першого ж бота закрило форму
-// для решти. Справжня адреса приходить у X-Forwarded-For.
+// On Render the app sits behind a proxy, so RemoteIpAddress would equal the
+// proxy address for EVERY visitor. Without this, rate limiting would count
+// everyone as one client and the first bot would lock the form for the rest.
+// The real address arrives in X-Forwarded-For.
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
     options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
 
-    // За замовчуванням заголовку довіряють лише від loopback. Адреси проксі
-    // Render наперед невідомі, тому список довірених очищаємо.
+    // By default the header is trusted only from loopback. Render's proxy
+    // addresses are not known upfront, so the trusted list is cleared.
     options.KnownNetworks.Clear();
     options.KnownProxies.Clear();
 });
@@ -114,19 +114,19 @@ builder.Services
 
 builder.Services.AddAuthorization();
 
-// Обмеження частоти вішається ІМЕННОЮ політикою, а не глобально: адмінка
-// й портал роблять десятки запитів і під загальний ліміт потрапляти не мають.
+// Rate limiting is attached as a NAMED policy, not globally: the admin panel
+// and portal make dozens of calls and must not fall under a blanket limit.
 builder.Services.AddRateLimiter(options =>
 {
     options.AddPolicy(RateLimitPolicies.PublicClientRequests, httpContext =>
         RateLimitPartition.GetFixedWindowLimiter(
-            // Ключ розділу — адреса клієнта: у кожного своє власне вікно.
+            // The partition key is the client address: everyone gets their own window.
             partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
             factory: _ => new FixedWindowRateLimiterOptions
             {
                 PermitLimit = 5,
                 Window = TimeSpan.FromMinutes(10),
-                // Черги немає: зайвий запит одразу відхиляємо, а не тримаємо.
+                // No queue: an excess request is rejected immediately rather than held.
                 QueueLimit = 0
             }));
 
@@ -135,7 +135,7 @@ builder.Services.AddRateLimiter(options =>
             partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
             factory: _ => new FixedWindowRateLimiterOptions
             {
-                // Підписка дешевша за заявку, тож ліміт м'якший.
+                // A newsletter signup is cheaper than a request, so the limit is softer.
                 PermitLimit = 10,
                 Window = TimeSpan.FromMinutes(10),
                 QueueLimit = 0
@@ -151,8 +151,8 @@ builder.Services.AddRateLimiter(options =>
                 ((int)retryAfter.TotalSeconds).ToString(CultureInfo.InvariantCulture);
         }
 
-        // Тіло у форматі, який фронт уже вміє читати через getApiErrorMessage,
-        // інакше користувач побачив би загальне «не вдалося надіслати».
+        // The body uses the shape the frontend already reads via getApiErrorMessage;
+        // otherwise the user would see a generic "could not send".
         await context.HttpContext.Response.WriteAsJsonAsync(new
         {
             type = "too_many_requests",
@@ -164,7 +164,7 @@ builder.Services.AddRateLimiter(options =>
 
 var app = builder.Build();
 
-// Найперше в конвеєрі: усе, що нижче, має бачити справжню адресу клієнта.
+// First in the pipeline: everything below must see the real client address.
 app.UseForwardedHeaders();
 
 app.UseCors("Frontend");
@@ -178,9 +178,9 @@ try
 }
 catch (Exception ex)
 {
-    // Сідер — допоміжна дія на старті, а не сенс існування застосунку.
-    // Якщо база саме прокидається, краще піднятись і обслуговувати запити:
-    // ролі й адмін створюються ідемпотентно, наступний старт досіє решту.
+    // Seeding is a startup convenience, not the reason the app exists.
+    // If the database is still waking up, better to start and serve requests:
+    // roles and the admin are seeded idempotently, the next start finishes the job.
     app.Services
         .GetRequiredService<ILogger<Program>>()
         .LogError(ex, "Identity seeding failed on startup. The application will continue without it.");
@@ -197,8 +197,8 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Після маршрутизації — інакше політика, привʼязана до конкретного
-// ендпоінта атрибутом, просто не буде знайдена.
+// After routing: otherwise a policy attached to a specific endpoint by
+// an attribute simply would not be found.
 app.UseRateLimiter();
 
 try

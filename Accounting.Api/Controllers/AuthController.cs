@@ -28,9 +28,9 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
-    /// Завжди 204, навіть якщо такої пошти немає. Різна відповідь дозволила б
-    /// перебирати адреси й дізнаватись, хто зареєстрований.
-    /// Під обмеженням частоти, бо кожен виклик шле лист.
+    /// Always 204, even when the address is unknown. Differing responses would let
+    /// someone enumerate addresses and learn who is registered.
+    /// Rate limited, because every call sends an email.
     /// </summary>
     [HttpPost("forgot-password")]
     [EnableRateLimiting(RateLimitPolicies.PublicNewsletter)]

@@ -1,17 +1,17 @@
 namespace Accounting.Infrastructure.Messaging
 {
     /// <summary>
-    /// Відправка через HTTP API Brevo замість SMTP: безкоштовні хостинги
-    /// (зокрема Render) блокують вихідний порт 587, а 443 відкритий завжди.
+    /// Sending through Brevo's HTTP API instead of SMTP: free hosts (Render
+    /// among them) block outbound port 587, while 443 is always open.
     /// </summary>
     public class BrevoOptions
     {
         public const string SectionName = "Brevo";
 
-        /// <summary>Ключ із вкладки <b>API Keys</b>, а не SMTP key — це різні ключі.</summary>
+        /// <summary>The key from the <b>API Keys</b> tab, not the SMTP key: they differ.</summary>
         public string ApiKey { get; init; } = string.Empty;
 
-        /// <summary>Має збігатися з підтвердженим відправником у Brevo.</summary>
+        /// <summary>Must match a verified sender in Brevo.</summary>
         public string FromEmail { get; init; } = string.Empty;
 
         public string FromName { get; init; } = string.Empty;
@@ -19,8 +19,8 @@ namespace Accounting.Infrastructure.Messaging
         public int TimeoutSeconds { get; init; } = 15;
 
         /// <summary>
-        /// Номер списку розсилки в Brevo (Contacts → Lists). Не заданий —
-        /// підписники зберігаються лише в нашій базі, без падінь.
+        /// Brevo mailing list id (Contacts, then Lists). When unset, subscribers
+        /// are stored only in our database, without failing.
         /// </summary>
         public int? NewsletterListId { get; init; }
     }

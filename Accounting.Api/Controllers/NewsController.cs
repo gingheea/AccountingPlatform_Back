@@ -17,11 +17,11 @@ namespace Accounting.Api.Controllers
         }
 
         /// <summary>
-        /// Новини бухгалтерської тематики з зовнішньої стрічки.
+        /// Accounting news pulled from an external feed.
         ///
-        /// Фронт міг би читати стрічку й сам, але не може: чужий сайт не віддає
-        /// заголовок CORS, тому браузер такий запит блокує. Плюс тут кеш —
-        /// один запит до джерела на всіх відвідувачів, а не на кожного.
+        /// The frontend could read the feed itself but cannot: the other site sends
+        /// no CORS header, so the browser blocks the request. There is also a cache:
+        /// one call to the source for all visitors instead of one per visitor.
         /// </summary>
         [HttpGet]
         [AllowAnonymous]

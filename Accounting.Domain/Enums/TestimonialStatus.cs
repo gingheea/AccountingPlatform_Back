@@ -1,8 +1,8 @@
 namespace Accounting.Domain.Enums;
 
 /// <summary>
-/// Нумерація починається з 1 навмисно: якщо значення десь забудуть проставити,
-/// у полі опиниться 0, і це одразу видно як помилку, а не як «На розгляді».
+/// Numbering starts at 1 on purpose: if the value is ever left unset,
+/// the field holds 0, which reads as an error rather than as "Pending".
 /// </summary>
 public enum TestimonialStatus
 {

@@ -42,8 +42,8 @@ namespace Accounting.Application.Features.Portal.ListClientRequests
             return await _repository
                 .Query()
                 .AsNoTracking()
-                // Фільтр за власником стоїть до посторінковості: інакше клієнт
-                // побачив би чужі заявки, просто попросивши іншу сторінку.
+                // The owner filter comes before paging: otherwise a client would see other
+                // people's requests simply by asking for a different page.
                 .Where(x => x.UserId == userId.Value)
                 .OrderByDescending(x => x.CreatedAtUtc)
                 .ThenBy(x => x.Id)

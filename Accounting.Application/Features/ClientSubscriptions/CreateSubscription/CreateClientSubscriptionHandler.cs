@@ -47,8 +47,8 @@ namespace Accounting.Application.Features.ClientSubscriptions.CreateSubscription
                 await _pricingPackageRepository.GetByIdAsync(request.PricingPackageId.Value, ct) is null)
                 throw new NotFoundException($"Pricing package with id {request.PricingPackageId} not found.");
 
-            // Двічі вести того самого клієнта за тим самим пакетом безглуздо:
-            // це або помилка оператора, або дубль після повторного натискання.
+            // Running the same client on the same package twice makes no sense:
+            // it is either an operator mistake or a duplicate from a double click.
             var alreadyActive = await _repository.Query()
                 .AsNoTracking()
                 .AnyAsync(

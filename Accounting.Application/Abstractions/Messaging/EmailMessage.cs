@@ -1,15 +1,15 @@
 namespace Accounting.Application.Abstractions.Messaging
 {
     /// <summary>
-    /// Один лист. Окремий тип, а не купа параметрів у методі: полів з часом
-    /// стає більше (вкладення, копія), і кожне нове не ламатиме виклики.
+    /// A single email. A dedicated type rather than a pile of method parameters:
+    /// fields accumulate over time (attachments, cc) without breaking callers.
     /// </summary>
     /// <param name="TextBody">
-    /// Текстова версія. Лист лише з HTML частіше вважають спамом.
+    /// Plain-text version. HTML-only mail is flagged as spam more often.
     /// </param>
     /// <param name="ReplyTo">
-    /// Куди піде відповідь, якщо натиснути «Відповісти». Для сповіщення про
-    /// заявку сюди кладемо пошту клієнта — тоді бухгалтер відповідає йому напряму.
+    /// Where a "Reply" click goes. For a new-request notification we put the
+    /// client's address here so the accountant answers them directly.
     /// </param>
     public sealed record EmailMessage(
         string To,

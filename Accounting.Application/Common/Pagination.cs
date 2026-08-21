@@ -11,9 +11,9 @@ namespace Accounting.Application.Common
         public const int DefaultPageSize = 20;
 
         /// <summary>
-        /// Стеля розміру сторінки. Номер сторінки й розмір приходять із рядка
-        /// запиту, тобто ними керує будь-хто ззовні. Без стелі ?pageSize=1000000
-        /// був би способом покласти базу одним запитом.
+        /// Upper bound on page size. Page number and size arrive in the query string,
+        /// meaning anyone outside controls them. Without a cap ?pageSize=1000000
+        /// would be a way to take the database down with a single request.
         /// </summary>
         public const int MaxPageSize = 200;
 
@@ -23,16 +23,16 @@ namespace Accounting.Application.Common
             => pageSize < 1 ? DefaultPageSize : Math.Min(pageSize, MaxPageSize);
 
         /// <summary>
-        /// Рахує загальну кількість і повертає одну сторінку.
+        /// Counts the total and returns a single page.
         ///
-        /// Сортування задає той, хто викликає — і воно має бути однозначним.
-        /// Якщо сортувати лише за датою, два записи з однаковою датою база
-        /// вільна повертати в різному порядку на різних запитах: тоді один
-        /// запис приїде на двох сторінках, а інший не приїде взагалі. Тому
-        /// в кожному виклику другим полем іде Id.
+        /// The caller supplies the ordering, and it must be unambiguous.
+        /// Ordering by date alone lets the database return two rows sharing a date
+        /// in a different order on each request: then one row lands on two pages
+        /// while another never appears at all. That is why every call adds Id
+        /// as the second ordering field.
         ///
-        /// <paramref name="project"/> окремим кроком, бо частина обробників
-        /// проєктує через AutoMapper (ProjectTo), а частина — руками (Select).
+        /// <paramref name="project"/> is a separate step because some handlers project
+        /// through AutoMapper (ProjectTo) and others by hand (Select).
         /// </summary>
         public static async Task<PagedResult<TResult>> ToPagedResultAsync<TSource, TResult>(
             this IOrderedQueryable<TSource> ordered,
@@ -44,8 +44,8 @@ namespace Accounting.Application.Common
             page = NormalizePage(page);
             pageSize = NormalizePageSize(pageSize);
 
-            // Рахуємо до Skip/Take: Total має бути кількістю всіх записів,
-            // а не тих, що потрапили на цю сторінку.
+            // Counted before Skip/Take: Total must be the number of all rows,
+            // not of the ones that landed on this page.
             var total = await ordered.CountAsync(ct);
 
             var pageQuery = ordered

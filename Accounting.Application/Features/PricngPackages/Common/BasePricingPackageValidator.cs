@@ -51,7 +51,7 @@ namespace Accounting.Application.Features.PricngPackages.Common
 
         private static bool HaveUniqueFeatures(IReadOnlyCollection<string> features)
         {
-            if (features == null) return true; // Захист від NullReferenceException
+            if (features == null) return true; // Guards against a NullReferenceException
 
             var normalizedFeatures = features
                 .Where(feature => !string.IsNullOrWhiteSpace(feature))

@@ -9,8 +9,8 @@ namespace Accounting.Application.Features.Portal.ChangePassword
             RuleFor(x => x.CurrentPassword)
                 .NotEmpty().WithMessage("Введіть поточний пароль.");
 
-            // Правила складності живуть у налаштуваннях Identity й перевіряються
-            // при збереженні. Тут — лише мінімум, щоб не ганяти явно порожнє.
+            // Complexity rules live in the Identity options and are enforced on save.
+            // Only the bare minimum here, so obviously empty input is not sent onward.
             RuleFor(x => x.NewPassword)
                 .NotEmpty().WithMessage("Введіть новий пароль.")
                 .MinimumLength(8).WithMessage("Пароль має містити щонайменше 8 символів.")

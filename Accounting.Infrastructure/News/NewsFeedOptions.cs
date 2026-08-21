@@ -4,16 +4,16 @@ namespace Accounting.Infrastructure.News
     {
         public const string SectionName = "NewsFeed";
 
-        /// <summary>Адреса стрічки. Підтримуються обидва формати — RSS і Atom.</summary>
+        /// <summary>Feed URL. Both formats are supported: RSS and Atom.</summary>
         public string Url { get; init; } = "https://news.dtkt.ua/rss";
 
-        /// <summary>Назва джерела — показуємо її на картці, щоб авторство було видно.</summary>
+        /// <summary>Source name, shown on the card so the attribution is visible.</summary>
         public string SourceName { get; init; } = "Дебет-Кредит";
 
         /// <summary>
-        /// Скільки хвилин тримати відповідь у памʼяті, не ходячи до джерела.
-        /// Новини не оновлюються щосекунди, а зайві запити — це і повільна
-        /// сторінка, і ризик, що джерело почне нас блокувати.
+        /// How many minutes to keep the response in memory without calling the source.
+        /// News does not change by the second, and needless calls mean both a slow
+        /// page and a risk of the source blocking us.
         /// </summary>
         public int CacheMinutes { get; init; } = 30;
 

@@ -45,8 +45,8 @@ namespace Accounting.Application.Abstractions.Identity
         Task DeactivateAsync(Guid id, CancellationToken ct);
 
         /// <summary>
-        /// Видаляє акаунт назовсім. Повʼязані документи, обслуговування й відгук
-        /// приберуться разом із ним — про це подбають звʼязки в базі.
+        /// Deletes the account for good. Related documents, engagements and the
+        /// testimonial go with it: the database relationships take care of that.
         /// </summary>
         Task DeleteAsync(Guid id, CancellationToken ct);
 
@@ -55,7 +55,7 @@ namespace Accounting.Application.Abstractions.Identity
             IReadOnlyCollection<string> roles,
             CancellationToken ct);
 
-        /// <summary>Зміна власного пароля: потребує підтвердження старого.</summary>
+        /// <summary>Changing one's own password: requires confirming the old one.</summary>
         Task ChangeOwnPasswordAsync(
             Guid id,
             string currentPassword,
@@ -63,9 +63,9 @@ namespace Accounting.Application.Abstractions.Identity
             CancellationToken ct);
 
         /// <summary>
-        /// Готує одноразовий код для відновлення пароля. Повертає null, якщо
-        /// такої пошти немає — щоб той, хто викликає, не мусив розрізняти
-        /// випадки й ненароком видати, чи існує акаунт.
+        /// Prepares a one-time password reset code. Returns null when no such address
+        /// exists, so the caller does not have to distinguish the cases and
+        /// accidentally reveal whether an account exists.
         /// </summary>
         Task<PasswordResetTicket?> CreatePasswordResetTicketAsync(string email, CancellationToken ct);
 

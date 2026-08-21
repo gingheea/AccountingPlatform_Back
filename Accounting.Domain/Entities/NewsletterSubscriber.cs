@@ -4,9 +4,9 @@ using Accounting.Domain.ValueObjects;
 namespace Accounting.Domain.Entities;
 
 /// <summary>
-/// Підписник на розсилку. Зберігаємо у себе, навіть попри те що список
-/// дублюється в Brevo: свою базу контактів не можна втратити разом з
-/// доступом до чужого сервісу.
+/// A newsletter subscriber. Kept on our side even though the list is also
+/// mirrored in Brevo: our own contact base must not be lost together with
+/// access to somebody else's service.
 /// </summary>
 public sealed class NewsletterSubscriber
 {
@@ -14,7 +14,7 @@ public sealed class NewsletterSubscriber
 
     public string Email { get; private set; } = string.Empty;
 
-    /// <summary>Звідки підписались — футер, головна, блог. Видно, що працює.</summary>
+    /// <summary>Where the signup came from: footer, home, blog. Shows what works.</summary>
     public string Source { get; private set; } = string.Empty;
 
     public bool IsActive { get; private set; }
@@ -29,7 +29,7 @@ public sealed class NewsletterSubscriber
         return new NewsletterSubscriber
         {
             Id = Guid.NewGuid(),
-            // Перевірку формату не дублюємо — вона вже живе в Email.
+            // Format checking is not duplicated here: it already lives in Email.
             Email = ValueObjects.Email.Create(email).Value.ToLowerInvariant(),
             Source = NormalizeSource(source),
             IsActive = true,
@@ -38,8 +38,8 @@ public sealed class NewsletterSubscriber
     }
 
     /// <summary>
-    /// Повторна підписка того, хто раніше відписався. Новий запис не створюємо:
-    /// пошта має бути в базі один раз.
+    /// Re-subscribing someone who opted out earlier. No new row is created:
+    /// an address must appear in the database exactly once.
     /// </summary>
     public void Resubscribe(string? source)
     {

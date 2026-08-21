@@ -3,6 +3,6 @@ using MediatR;
 
 namespace Accounting.Application.Features.Testimonials.GetMine
 {
-    /// <summary>Повертає null, якщо клієнт ще не лишав відгуку — це не помилка.</summary>
+    /// <summary>Returns null when the client has not left a testimonial yet; not an error.</summary>
     public sealed record GetMyTestimonialQuery : IRequest<TestimonialDto?>;
 }

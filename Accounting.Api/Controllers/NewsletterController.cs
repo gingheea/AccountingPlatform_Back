@@ -23,8 +23,8 @@ namespace Accounting.Api.Controllers
         }
 
         /// <summary>
-        /// Публічний і анонімний, як і форма заявки, тому під тим самим
-        /// обмеженням частоти — інакше це другий вхід для спаму.
+        /// Public and anonymous like the request form, so it sits behind the same
+        /// rate limit; otherwise it would be a second door for spam.
         /// </summary>
         [HttpPost("subscribe")]
         [AllowAnonymous]
@@ -38,7 +38,7 @@ namespace Accounting.Api.Controllers
             return NoContent();
         }
 
-        /// <summary>Список підписників — щоб вони не були видимі лише в Brevo.</summary>
+        /// <summary>The subscriber list, so it is not visible only inside Brevo.</summary>
         [HttpGet("subscribers")]
         [Authorize(Roles = "Admin")]
         [ProducesResponseType(typeof(PagedResult<NewsletterSubscriberDto>), StatusCodes.Status200OK)]

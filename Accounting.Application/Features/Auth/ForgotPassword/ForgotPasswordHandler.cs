@@ -39,9 +39,9 @@ namespace Accounting.Application.Features.Auth.ForgotPassword
 
             if (ticket is null)
             {
-                // Акаунта немає — мовчки виходимо. Назовні відповідь така сама,
-                // як при успіху: інакше формою відновлення можна було б
-                // перевіряти, чи зареєстрована конкретна людина.
+                // No such account: leave quietly. From the outside the response is the same
+                // as on success; otherwise the recovery form could be used to check
+                // whether a particular person is registered.
                 _logger.LogInformation("Password reset requested for unknown email.");
                 return;
             }
@@ -66,17 +66,17 @@ namespace Accounting.Application.Features.Auth.ForgotPassword
             }
             catch (Exception ex)
             {
-                // Мовчимо назовні з тієї ж причини: різна поведінка при збої
-                // теж підказала б, що акаунт існує.
+                // Silent outside for the same reason: differing behaviour on failure
+                // would also hint that the account exists.
                 _logger.LogError(ex, "Failed to send the password reset email.");
             }
         }
 
         /// <summary>
-        /// Код від Identity містить символи на кшталт «+» і «/», які в адресному
-        /// рядку тлумачаться інакше — найчастіше «+» перетворюється на пробіл,
-        /// і код приходить назад зіпсованим. Тому кодуємо його у безпечний для
-        /// URL вигляд, а фронт повертає рядок як є.
+        /// Identity's code contains characters such as "+" and "/" that a URL reads
+        /// differently: most often "+" becomes a space and the code comes back
+        /// corrupted. So it is encoded into a URL-safe form, and the frontend
+        /// returns the string untouched.
         /// </summary>
         private string BuildResetLink(PasswordResetTicket ticket)
         {

@@ -1,22 +1,22 @@
 namespace Accounting.Application.Common.Options
 {
     /// <summary>
-    /// «Кому і куди» — це рішення бізнесу, а не транспорту, тому воно живе тут,
-    /// а не в SmtpOptions. Зміна поштового провайдера не має чіпати ці значення.
+    /// "Who and where" is a business decision, not a transport one, so it lives
+    /// here rather than in the mail options. Changing provider must not touch it.
     /// </summary>
     public sealed class NotificationOptions
     {
         public const string SectionName = "Notifications";
 
-        /// <summary>Пошта бухгалтера — отримувач сповіщень про нові заявки.</summary>
+        /// <summary>The accountant's address: recipient of new-request notifications.</summary>
         public string AccountantEmail { get; init; } = string.Empty;
 
-        /// <summary>Посилання на список заявок в адмінці, щоб з листа можна було одразу перейти.</summary>
+        /// <summary>Link to the admin request list so the email can jump straight there.</summary>
         public string AdminRequestsUrl { get; init; } = string.Empty;
 
         /// <summary>
-        /// Адреса сайту, від якої будується посилання на встановлення нового
-        /// пароля. Бек не знає маршрутів фронту, тож базу задаємо конфігом.
+        /// Site address used to build the password reset link. The backend does not
+        /// know the frontend routes, so the base comes from configuration.
         /// </summary>
         public string SiteUrl { get; init; } = string.Empty;
     }

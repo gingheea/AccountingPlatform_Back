@@ -84,8 +84,8 @@ namespace Accounting.Api.Controllers
             [FromQuery] int pageSize = Pagination.DefaultPageSize,
             CancellationToken ct = default)
         {
-            // Id підставляємо з токена, а не з запиту — інакше клієнт міг би
-            // попросити чужі дані, просто змінивши параметр.
+            // The id comes from the token, not from the request: otherwise a client
+            // could ask for somebody else's data by changing a parameter.
             var subscriptions = await _mediator.Send(
                 new ListClientSubscriptionsQuery(CurrentUserId(), Status: null, page, pageSize), ct);
 
@@ -155,7 +155,7 @@ namespace Accounting.Api.Controllers
             return Ok(download);
         }
 
-        /// <summary>Власний відгук клієнта разом зі станом розгляду. null — ще не писав.</summary>
+        /// <summary>The client's own testimonial and its review state. null means none yet.</summary>
         [HttpGet("testimonial")]
         [ProducesResponseType(typeof(TestimonialDto), StatusCodes.Status200OK)]
         public async Task<ActionResult<TestimonialDto?>> MyTestimonial(CancellationToken ct)
@@ -166,8 +166,8 @@ namespace Accounting.Api.Controllers
         }
 
         /// <summary>
-        /// Надіслати або переписати свій відгук. Публікується не одразу —
-        /// спершу його має схвалити бухгалтер.
+        /// Submit or rewrite one's own testimonial. It is not published right away:
+        /// the accountant has to approve it first.
         /// </summary>
         [HttpPost("testimonial")]
         public async Task<ActionResult<Guid>> SubmitTestimonial(

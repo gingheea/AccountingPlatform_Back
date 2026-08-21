@@ -5,9 +5,9 @@ using System;
 namespace Accounting.Application.Features.ClientRequests.Events
 {
     /// <summary>
-    /// Факт «заявку створено». Публікується після збереження в базу.
-    /// Хто на це реагує — не турбота того, хто публікує: сьогодні один лист,
-    /// завтра ще Telegram, і CreateClientRequestHandler не зміниться.
+    /// The fact that a request was created. Published after the database save.
+    /// Who reacts is none of the publisher's business: one email today,
+    /// Telegram tomorrow, and CreateClientRequestHandler stays unchanged.
     /// </summary>
     public sealed record ClientRequestCreatedNotification(
         Guid RequestId,

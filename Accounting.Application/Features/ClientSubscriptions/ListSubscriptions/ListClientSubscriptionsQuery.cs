@@ -7,8 +7,8 @@ using System;
 namespace Accounting.Application.Features.ClientSubscriptions.ListSubscriptions
 {
     /// <param name="UserId">
-    /// Портал завжди підставляє сюди id з токена, тож клієнт не побачить чуже.
-    /// Адмінський ендпоінт передає null або конкретного клієнта для фільтра.
+    /// The portal always fills this from the token, so a client cannot see others'.
+    /// The admin endpoint passes null, or a specific client to filter by.
     /// </param>
     public sealed record ListClientSubscriptionsQuery(
         Guid? UserId,

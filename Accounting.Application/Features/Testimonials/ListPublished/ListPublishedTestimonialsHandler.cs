@@ -30,22 +30,22 @@ namespace Accounting.Application.Features.Testimonials.ListPublished
             var take = Math.Clamp(request.Take, 1, MaxTake);
             var skip = Math.Max(request.Skip, 0);
 
-            // Фільтр за Approved стоїть тут, у єдиному місці, звідки публічна
-            // сторінка бере дані. Якби відбір робив фронт, будь-хто побачив би
-            // нерозглянуті відгуки, просто відкривши відповідь запиту.
+            // The Approved filter lives here, the single place the public page reads
+            // from. If the frontend did the filtering, anyone could see pending
+            // testimonials just by opening the raw response.
             var query = _repository.Query()
                 .AsNoTracking()
                 .Where(x => x.Status == TestimonialStatus.Approved);
 
-            // Рахуємо до Skip/Take: Total має бути кількістю всіх схвалених
-            // відгуків, а не тих, що потрапили на цю сторінку.
+            // Counted before Skip/Take: Total must be the number of all approved
+            // testimonials, not of the ones that landed on this page.
             var total = await query.CountAsync(ct);
 
             var items = await query
-                // Сортування має бути однозначним, інакше запис може
-                // потрапити на дві сторінки або не потрапити на жодну.
-                // ModeratedAtUtc у двох відгуків може збігтися до мілісекунди,
-                // тому додаємо Id як остаточний розділювач.
+                // The ordering must be unambiguous, otherwise a row can land on two pages
+                // or on none at all.
+                // Two testimonials can share ModeratedAtUtc down to the millisecond,
+                // so Id is added as the final tie-breaker.
                 .OrderByDescending(x => x.ModeratedAtUtc)
                 .ThenBy(x => x.Id)
                 .Skip(skip)

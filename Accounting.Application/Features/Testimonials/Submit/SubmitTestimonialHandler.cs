@@ -34,8 +34,8 @@ namespace Accounting.Application.Features.Testimonials.Submit
 
             var existing = await _repository.GetByUserIdAsync(userId, ct);
 
-            // Один відгук на клієнта: повторне надсилання не створює другий запис,
-            // а переписує наявний і повертає його на розгляд.
+            // One testimonial per client: resubmitting does not create a second row,
+            // it rewrites the existing one and sends it back for review.
             if (existing is not null)
             {
                 existing.UpdateContent(request.Content, request.AuthorRole);
@@ -61,9 +61,9 @@ namespace Accounting.Application.Features.Testimonials.Submit
         }
 
         /// <summary>
-        /// Ім'я в профілі не обов'язкове, а підпис під відгуком потрібен завжди.
-        /// Якщо імені немає — беремо частину пошти до «@», щоб не впасти
-        /// і не підписати відгук порожнім рядком.
+        /// A profile name is optional, but a testimonial always needs a signature.
+        /// With no name we take the part of the address before "@", so as not to
+        /// fail and not to sign the testimonial with an empty string.
         /// </summary>
         private static string ResolveAuthorName(string? fullName, string email)
         {

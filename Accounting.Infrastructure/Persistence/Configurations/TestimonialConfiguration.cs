@@ -22,18 +22,18 @@ namespace Accounting.Infrastructure.Persistence.Configurations
             b.Property(x => x.CreatedAtUtc).IsRequired();
             b.Property(x => x.ModeratedAtUtc);
 
-            // Видаляють клієнта — зникає і його відгук. Без цього звʼязку відгук
-            // лишився б у базі з посиланням на неіснуючого користувача.
+            // Delete a client and their testimonial goes too. Without this relationship
+            // the testimonial would linger, pointing at a user who no longer exists.
             b.HasOne<AppUser>()
                 .WithMany()
                 .HasForeignKey(x => x.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Один відгук на клієнта. Унікальний індекс, а не перевірка в коді:
-            // два одночасні запити не побачили б один одного і створили б дубль.
+            // One testimonial per client. A unique index rather than a check in code:
+            // two simultaneous requests would not see each other and would both insert.
             b.HasIndex(x => x.UserId).IsUnique();
 
-            // Публічна сторінка завжди питає «схвалені, найновіші зверху».
+            // The public page always asks for "approved, newest first".
             b.HasIndex(x => new { x.Status, x.CreatedAtUtc });
         }
     }

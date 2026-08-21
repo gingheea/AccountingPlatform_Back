@@ -48,8 +48,8 @@ namespace Accounting.Infrastructure.Messaging
 
             if (!response.IsSuccessStatusCode)
             {
-                // Тіло відповіді Brevo містить причину відмови — без нього
-                // в логах був би лише голий код статусу.
+                // Brevo's response body carries the reason for the refusal; without it
+                // the logs would show a bare status code and nothing else.
                 var body = await response.Content.ReadAsStringAsync(ct);
 
                 throw new InvalidOperationException(

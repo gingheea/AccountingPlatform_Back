@@ -23,9 +23,9 @@ namespace Accounting.Api.Controllers
         }
 
         /// <summary>
-        /// Схвалені відгуки для публічних сторінок, посторінково.
-        /// Повертає ще й загальну кількість — щоб сторінка знала,
-        /// чи лишилось що довантажувати.
+        /// Approved testimonials for public pages, one page at a time.
+        /// Also returns the overall count so the page knows whether anything
+        /// is left to load.
         /// </summary>
         [HttpGet("published")]
         [AllowAnonymous]
@@ -40,7 +40,7 @@ namespace Accounting.Api.Controllers
             return Ok(page);
         }
 
-        /// <summary>Усі відгуки з їхнім станом — для розгляду в адмінці.</summary>
+        /// <summary>All testimonials with their state, for review in the admin panel.</summary>
         [HttpGet]
         [Authorize(Roles = "Admin")]
         [ProducesResponseType(typeof(PagedResult<TestimonialDto>), StatusCodes.Status200OK)]

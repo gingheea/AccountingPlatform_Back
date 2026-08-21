@@ -12,9 +12,9 @@ namespace Accounting.Application.Features.ClientSubscriptions.CreateSubscription
             RuleFor(x => x.Note)
                 .MaximumLength(2000);
 
-            // Правило «рівно одне з двох» дублює доменний інваріант навмисно:
-            // валідатор дає користувачу зрозумілу помилку 400, а домен
-            // страхує від некоректного стану, якщо його викличуть повз API.
+            // The "exactly one of two" rule duplicates the domain invariant on purpose:
+            // the validator gives the user a readable 400, while the domain guards
+            // against an invalid state if it is ever called around the API.
             RuleFor(x => x)
                 .Must(x => (x.ServiceId is not null) ^ (x.PricingPackageId is not null))
                 .WithMessage("Select either a service or a pricing package, not both.");

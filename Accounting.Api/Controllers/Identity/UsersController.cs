@@ -90,9 +90,9 @@ namespace Accounting.Api.Controllers.Identity
         }
 
         /// <summary>
-        /// Видаляє акаунт назовсім разом із його документами, обслуговуванням
-        /// і відгуком. Заявки лишаються — вони частина історії роботи, тому
-        /// в них лише зникає посилання на клієнта.
+        /// Deletes the account for good, along with its documents, engagements and
+        /// testimonial. Requests stay: they are part of the work history, so they
+        /// merely lose their link to the client.
         /// </summary>
         [HttpDelete("{id:guid}")]
         [Authorize(Roles = "Admin")]

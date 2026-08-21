@@ -21,8 +21,8 @@ namespace Accounting.Application.Features.Portal.ChangePassword
 
         public async Task Handle(ChangeOwnPasswordCommand request, CancellationToken ct)
         {
-            // Id беремо з токена, а не з тіла запиту: інакше будь-хто міг би
-            // передати чужий і змінити не свій пароль.
+            // The id comes from the token, not from the request body: otherwise anyone
+            // could pass somebody else's and change a password that is not theirs.
             var userId = _currentUserService.UserId
                          ?? throw new UnauthorizedAccessException("Current user is not authenticated.");
 

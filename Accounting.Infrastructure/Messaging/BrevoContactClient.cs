@@ -33,8 +33,8 @@ namespace Accounting.Infrastructure.Messaging
         {
             if (_options.NewsletterListId is null or <= 0)
             {
-                // Списку немає — підписка все одно збережена в нашій базі,
-                // тож це попередження, а не помилка.
+                // No list configured: the subscription is still saved in our database,
+                // so this is a warning rather than an error.
                 _logger.LogWarning(
                     "Brevo:NewsletterListId is not configured, {Email} was saved locally only.", email);
 
@@ -45,13 +45,13 @@ namespace Accounting.Infrastructure.Messaging
             {
                 ["email"] = email,
                 ["listIds"] = new[] { _options.NewsletterListId.Value },
-                // Щоб повторна підписка не падала з «контакт уже існує».
+                // So a repeat signup does not fail with "contact already exists".
                 ["updateEnabled"] = true
             };
 
             using var response = await _httpClient.PostAsJsonAsync(ContactsEndpoint, payload, ct);
 
-            // 204 — контакт оновлено, 201 — створено. Обидва нас влаштовують.
+            // 204 means the contact was updated, 201 that it was created. Both are fine.
             if (response.IsSuccessStatusCode || response.StatusCode == HttpStatusCode.NoContent)
                 return;
 

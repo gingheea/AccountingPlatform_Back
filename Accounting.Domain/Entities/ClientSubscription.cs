@@ -4,9 +4,9 @@ using Accounting.Domain.Exceptions;
 namespace Accounting.Domain.Entities;
 
 /// <summary>
-/// Обслуговування клієнта: який пакет або послугу бухгалтер веде для нього
-/// зараз. Відрізняється від заявки — заявка це разова подія «людина запитала»,
-/// а це тривалі стосунки, які починаються, можуть паузитись і завершуються.
+/// An ongoing engagement: which package or service the accountant currently
+/// runs for this client. Different from a request: a request is a one-off event
+/// ("someone asked"), this is a lasting relationship that starts, may pause and ends.
 /// </summary>
 public sealed class ClientSubscription
 {
@@ -27,7 +27,7 @@ public sealed class ClientSubscription
     public DateTime CreatedAtUtc { get; private set; }
     public DateTime UpdatedAtUtc { get; private set; }
 
-    // EF Core потребує безпараметричний конструктор
+    // EF Core needs a parameterless constructor
     private ClientSubscription() { }
 
     public static ClientSubscription Create(
@@ -98,8 +98,8 @@ public sealed class ClientSubscription
     }
 
     /// <summary>
-    /// Або послуга, або пакет — рівно одне. Обидва означали б незрозуміло
-    /// що коштує, жодного — обслуговування без предмета.
+    /// Either a service or a package, exactly one. Both would leave the price
+    /// ambiguous; neither would leave an engagement with no subject.
     /// </summary>
     private static void SetSelectionGuard(Guid? serviceId, Guid? pricingPackageId)
     {

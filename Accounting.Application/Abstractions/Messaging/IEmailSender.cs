@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 namespace Accounting.Application.Abstractions.Messaging
 {
     /// <summary>
-    /// Контракт навмисне нічого не знає про SMTP: заміна провайдера або перехід
-    /// на HTTP API не має зачіпати жоден обробник в Application.
+    /// The contract deliberately knows nothing about SMTP: swapping provider or
+    /// moving to an HTTP API must not touch a single Application handler.
     /// </summary>
     public interface IEmailSender
     {

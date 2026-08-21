@@ -19,7 +19,7 @@ namespace Accounting.Application.Features.Auth.ResetPassword
 
         public async Task Handle(ResetPasswordCommand request, CancellationToken ct)
         {
-            // Розкодовуємо назад те, що для посилання кодували у безпечний вигляд.
+            // Decode back what was URL-safe encoded for the link.
             var token = Base64UrlDecode(request.Token);
 
             await _userManagementService.ResetPasswordWithTokenAsync(
@@ -30,8 +30,8 @@ namespace Accounting.Application.Features.Auth.ResetPassword
         {
             var normalized = value.Replace('-', '+').Replace('_', '/');
 
-            // При кодуванні відкидали «=» у кінці — повертаємо їх назад,
-            // інакше Base64 не розбереться з довжиною.
+            // Encoding dropped the trailing "=" padding: put it back,
+            // otherwise Base64 cannot make sense of the length.
             normalized = (normalized.Length % 4) switch
             {
                 2 => normalized + "==",

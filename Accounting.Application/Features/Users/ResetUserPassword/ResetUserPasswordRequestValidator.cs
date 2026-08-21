@@ -16,11 +16,11 @@ namespace Accounting.Application.Features.Users.ResetUserPassword
                 .NotEmpty()
                 .WithMessage("Не вказано користувача.");
 
-            // Правила складності мають збігатися з політикою Identity
-            // (Infrastructure/DependencyInjection.cs): 8 символів, велика,
-            // мала й цифра. Спецсимвол там НЕ вимагається — а тут колись
-            // вимагався, і адмін не міг задати пароль, який система сама
-            // вважає припустимим.
+            // Complexity rules must match the Identity policy
+            // (Infrastructure/DependencyInjection.cs): 8 characters, an upper-case,
+            // a lower-case letter and a digit. A special character is NOT required
+            // there, yet it once was here, and an admin could not set a password the
+            // system itself considers valid.
             RuleFor(x => x.NewPassword)
                 .NotEmpty()
                 .WithMessage("Введіть новий пароль.")

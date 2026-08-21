@@ -5,9 +5,9 @@ using MediatR;
 namespace Accounting.Application.Features.Users.GetUsers
 {
     /// <param name="Search">
-    /// Шукає по імені, пошті й податковому коду. Фільтр мусить бути на сервері:
-    /// щойно список порізаний на сторінки, пошук у браузері шукав би лише
-    /// по тому, що вже завантажено, — і мовчки не знаходив би решту.
+    /// Searches name, email and tax id. The filter has to run on the server:
+    /// once the list is paged, an in-browser search would only look at what is
+    /// already loaded and would silently miss the rest.
     /// </param>
     public sealed record GetUsersQuery(
         string? Search,

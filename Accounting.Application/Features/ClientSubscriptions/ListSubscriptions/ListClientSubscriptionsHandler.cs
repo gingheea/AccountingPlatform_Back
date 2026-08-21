@@ -45,10 +45,9 @@ namespace Accounting.Application.Features.ClientSubscriptions.ListSubscriptions
 
             var total = await query.CountAsync(ct);
 
-            // Спершу відрізаємо сторінку, і лише потім тягнемо назви. Раніше
-            // сюди завантажувались усі записи одразу — саме тому цей обробник
-            // не вкладається в спільний помічник: назви підставляються вже
-            // після вибірки, в памʼяті.
+            // Slice the page first, only then fetch the names. This used to load every
+            // row at once, which is exactly why this handler does not fit the shared
+            // helper: the names are filled in after the query, in memory.
             var subscriptions = await query
                 .OrderByDescending(x => x.StartedAtUtc)
                 .ThenBy(x => x.Id)
@@ -59,8 +58,8 @@ namespace Accounting.Application.Features.ClientSubscriptions.ListSubscriptions
             if (subscriptions.Count == 0)
                 return new PagedResult<ClientSubscriptionDto>(Array.Empty<ClientSubscriptionDto>(), total);
 
-            // Назви тягнемо двома окремими запитами, а не join'ом: так читабельніше,
-            // і на цих обсягах різниці в швидкості немає.
+            // Names come from two separate queries rather than a join: it reads better,
+            // and at these volumes the speed is the same.
             var serviceIds = subscriptions
                 .Where(x => x.ServiceId is not null)
                 .Select(x => x.ServiceId!.Value)

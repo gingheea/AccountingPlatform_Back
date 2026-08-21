@@ -1,9 +1,9 @@
 namespace Accounting.Domain.Enums
 {
     /// <summary>
-    /// Нумерація свідомо з 1, а не з 0. У C# незаданий enum дорівнює 0,
-    /// тож якщо 0 означав би реальний стан, забуте присвоєння виглядало б
-    /// як валідне значення. З одиниці «нуль у базі» одразу видно як помилку.
+    /// Numbering deliberately starts at 1, not 0. An unset enum in C# equals 0,
+    /// so if 0 meant a real state, a forgotten assignment would look like
+    /// a valid value. Starting at 1 makes a zero in the database obviously wrong.
     /// </summary>
     public enum SubscriptionStatus
     {

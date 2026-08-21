@@ -36,14 +36,14 @@ namespace Accounting.Application.Features.Users.DeleteUser
 
         public async Task Handle(DeleteUserRequest request, CancellationToken ct)
         {
-            // Найпростіший спосіб залишитися без доступу до адмінки — стерти
-            // самого себе. Тому це заборонено окремо.
+            // The easiest way to lose access to the admin panel is to delete yourself,
+            // so that is forbidden explicitly.
             if (_currentUserService.UserId == request.Id)
                 throw new BadRequestException("Не можна видалити власний акаунт.");
 
-            // Рядки документів приберуться каскадом разом із користувачем, а от
-            // самі файли в сховищі — ні: сховище про базу нічого не знає.
-            // Тому спершу прибираємо файли, і лише потім акаунт.
+            // Document rows are removed by cascade along with the user, but the files
+            // in storage are not: storage knows nothing about the database.
+            // So the files go first and the account only afterwards.
             var storageKeys = await _documents.Query()
                 .AsNoTracking()
                 .Where(x => x.UserId == request.Id)
@@ -58,9 +58,9 @@ namespace Accounting.Application.Features.Users.DeleteUser
                 }
                 catch (Exception ex)
                 {
-                    // Файл міг бути вже видалений або сховище тимчасово недоступне.
-                    // Через це не блокуємо видалення акаунта — інакше зайвий
-                    // користувач лишиться назавжди. Пишемо в лог і йдемо далі.
+                    // The file may already be gone, or storage may be briefly unavailable.
+                    // That must not block deleting the account, otherwise a junk user would
+                    // stay forever. Log it and move on.
                     _logger.LogWarning(ex,
                         "Could not delete file {StorageKey} while removing user {UserId}.",
                         key, request.Id);

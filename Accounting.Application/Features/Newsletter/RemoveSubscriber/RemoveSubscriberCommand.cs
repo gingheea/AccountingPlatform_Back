@@ -4,8 +4,8 @@ using System;
 namespace Accounting.Application.Features.Newsletter.RemoveSubscriber
 {
     /// <summary>
-    /// Повне видалення, а не позначка «відписаний»: якщо людина просить
-    /// прибрати її пошту, лишати запис у базі не можна.
+    /// A hard delete rather than an "unsubscribed" flag: when someone asks for
+    /// their address to be removed, no row may stay behind.
     /// </summary>
     public sealed record RemoveSubscriberCommand(Guid Id) : IRequest;
 }

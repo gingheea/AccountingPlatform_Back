@@ -27,10 +27,10 @@ public static class DependencyInjection
     {
         var cs = config.GetConnectionString("Default");
 
-        // Другий параметр UseNpgsql — налаштування саме провайдера Npgsql.
-        // EnableRetryOnFailure сам повторює запит, якщо помилка тимчасова
-        // (обрив зʼєднання, таймаут, недоступний хост). Neon засинає при
-        // простої, і перше звернення після сну падало б без цього.
+        // The second UseNpgsql argument configures the Npgsql provider itself.
+        // EnableRetryOnFailure retries a query when the failure is transient
+        // (dropped connection, timeout, unreachable host). Neon sleeps while idle,
+        // and the first call after it woke up would fail without this.
         services.AddDbContext<AppDbContext>(opt =>
             opt.UseNpgsql(cs, npgsql =>
                 npgsql.EnableRetryOnFailure(
@@ -77,7 +77,7 @@ public static class DependencyInjection
     {
         services.Configure<NewsFeedOptions>(config.GetSection(NewsFeedOptions.SectionName));
 
-        // Кеш новин живе в памʼяті самого застосунку.
+        // The news cache lives in the application's own memory.
         services.AddMemoryCache();
 
         services.AddHttpClient<INewsFeedClient, SyndicationNewsFeedClient>((sp, client) =>
@@ -86,7 +86,7 @@ public static class DependencyInjection
 
             client.Timeout = TimeSpan.FromSeconds(options.TimeoutSeconds);
 
-            // Частина сайтів відмовляє клієнтам без User-Agent, вважаючи їх ботами.
+            // Some sites reject clients without a User-Agent, treating them as bots.
             client.DefaultRequestHeaders.Add("User-Agent", "AccountingPlatform/1.0 (+feed reader)");
         });
 
@@ -98,8 +98,8 @@ public static class DependencyInjection
         services.Configure<BrevoOptions>(config.GetSection(BrevoOptions.SectionName));
         services.Configure<NotificationOptions>(config.GetSection(NotificationOptions.SectionName));
 
-        // Обидва клієнти ходять в один API з тими самими заголовками,
-        // тому налаштування спільне.
+        // Both clients call the same API with the same headers,
+        // so the setup is shared.
         static Action<IServiceProvider, HttpClient> configureBrevo() => (sp, client) =>
         {
             var options = sp.GetRequiredService<IOptions<BrevoOptions>>().Value;

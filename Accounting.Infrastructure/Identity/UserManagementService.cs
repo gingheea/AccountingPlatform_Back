@@ -40,9 +40,9 @@ public sealed class UserManagementService : IUserManagementService
 
         if (!string.IsNullOrWhiteSpace(search))
         {
-            // ILike — пошук без урахування регістру засобами Postgres.
-            // EF.Functions.Like з ToLower() дав би те саме, але змусив би базу
-            // перебрати всі рядки, застосовуючи ToLower до кожного.
+            // ILike is Postgres' own case-insensitive match.
+            // EF.Functions.Like with ToLower() would do the same but force the database
+            // to walk every row applying ToLower to each one.
             var pattern = $"%{search}%";
 
             query = query.Where(x =>
@@ -62,9 +62,9 @@ public sealed class UserManagementService : IUserManagementService
 
         var result = new List<UserDto>(users.Count);
 
-        // Ролі Identity вміє віддавати лише по одному користувачу за раз, тож це
-        // запит на кожного. Раніше так перебирались геть усі користувачі; тепер —
-        // лише ті, що на поточній сторінці.
+        // Identity can only return roles one user at a time, so this is a query per
+        // user. It used to walk every user in the system; now it only covers the
+        // ones on the current page.
         foreach (var user in users)
         {
             var roles = await _userManager.GetRolesAsync(user);
@@ -288,15 +288,15 @@ public sealed class UserManagementService : IUserManagementService
         if (user is null)
             throw new InvalidOperationException("User not found.");
 
-        // ChangePasswordAsync сам звіряє старий пароль — окремої перевірки
-        // не робимо, інакше вона була б другим місцем, де можна помилитись.
+        // ChangePasswordAsync verifies the old password itself, so there is no
+        // separate check here that could drift out of step.
         var result = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
 
         if (result.Succeeded)
             return;
 
-        // Identity пише свої помилки англійською; найчастіший випадок
-        // перекладаємо, щоб людина одразу зрозуміла, що саме не так.
+        // Identity writes its errors in English; the most common case is translated
+        // so the person immediately understands what went wrong.
         if (result.Errors.Any(x => x.Code == "PasswordMismatch"))
             throw new BadRequestException("Поточний пароль неправильний.");
 
@@ -310,9 +310,9 @@ public sealed class UserManagementService : IUserManagementService
     {
         var user = await _userManager.FindByEmailAsync(email);
 
-        // Немає такого користувача або він вимкнений — повертаємо null.
-        // Той, хто викликає, все одно відповість «лист надіслано»: інакше
-        // за формою відновлення можна було б перебирати, чиї акаунти існують.
+        // No such user, or the account is disabled: return null.
+        // The caller answers "email sent" regardless: otherwise the recovery form
+        // could be used to enumerate which accounts exist.
         if (user is null || !user.IsActive)
             return null;
 
@@ -337,8 +337,8 @@ public sealed class UserManagementService : IUserManagementService
         if (result.Succeeded)
             return;
 
-        // «Недійсний токен» окремо: посилання могли використати двічі або
-        // воно застаріло — це не те саме, що слабкий пароль.
+        // "Invalid token" is handled separately: the link may have been used twice
+        // or expired, which is not the same as a weak password.
         if (result.Errors.Any(x => x.Code == "InvalidToken"))
             throw new BadRequestException(
                 "Посилання недійсне або застаріле. Запросіть відновлення ще раз.");

@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 namespace Accounting.Application.Abstractions.Messaging
 {
     /// <summary>
-    /// Додає контакт у список розсилки поштового сервісу, щоб бухгалтер міг
-    /// слати листи з його інтерфейсу, не чекаючи, поки ми напишемо свій.
-    /// Application не знає, що це саме Brevo.
+    /// Adds a contact to the mail service's list so the accountant can send
+    /// campaigns from its own interface without waiting for us to build one.
+    /// Application does not know that this is Brevo specifically.
     /// </summary>
     public interface INewsletterContactClient
     {

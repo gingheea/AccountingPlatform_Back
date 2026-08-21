@@ -42,9 +42,9 @@ namespace Accounting.Application.Features.Newsletter.Subscribe
             {
                 existing.Resubscribe(request.Source);
             }
-            // Якщо вже підписаний і активний — нічого не робимо й не скаржимось.
-            // Повторне натискання не має виглядати як помилка, а повідомлення
-            // «ви вже підписані» ще й підказало б стороннім, чия пошта є в базі.
+            // Already subscribed and active: do nothing and do not complain.
+            // A second click must not look like an error, and an "already subscribed"
+            // message would also tell outsiders whose address is in the database.
 
             await _unitOfWork.SaveChangesAsync(ct);
 
@@ -54,9 +54,9 @@ namespace Accounting.Application.Features.Newsletter.Subscribe
             }
             catch (Exception ex)
             {
-                // Підписка вже збережена в нашій базі — це головне. Якщо Brevo
-                // недоступний, людині не варто показувати помилку: вона зробила
-                // все правильно. Контакт можна донести в список і пізніше.
+                // The subscription is already saved on our side, which is what matters.
+                // If Brevo is down the person should not see an error: they did everything
+                // right. The contact can be pushed to the list later.
                 _logger.LogError(ex, "Failed to add {Email} to the newsletter contact list.", email);
             }
         }
