@@ -1,3 +1,4 @@
+using Accounting.Application.Common;
 using Accounting.Api.Common;
 using Accounting.Api.Contracts.Newsletter;
 using Accounting.Application.Features.Newsletter.ListSubscribers;
@@ -40,12 +41,14 @@ namespace Accounting.Api.Controllers
         /// <summary>Список підписників — щоб вони не були видимі лише в Brevo.</summary>
         [HttpGet("subscribers")]
         [Authorize(Roles = "Admin")]
-        [ProducesResponseType(typeof(IReadOnlyList<NewsletterSubscriberDto>), StatusCodes.Status200OK)]
-        public async Task<ActionResult<IReadOnlyList<NewsletterSubscriberDto>>> Subscribers(
+        [ProducesResponseType(typeof(PagedResult<NewsletterSubscriberDto>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<PagedResult<NewsletterSubscriberDto>>> Subscribers(
             [FromQuery] bool? isActive,
-            CancellationToken ct)
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = Pagination.DefaultPageSize,
+            CancellationToken ct = default)
         {
-            var subscribers = await _mediator.Send(new ListSubscribersQuery(isActive), ct);
+            var subscribers = await _mediator.Send(new ListSubscribersQuery(isActive, page, pageSize), ct);
 
             return Ok(subscribers);
         }

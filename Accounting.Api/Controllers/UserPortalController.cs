@@ -1,3 +1,4 @@
+using Accounting.Application.Common;
 using Accounting.Api.Contracts.Auth;
 using Accounting.Api.Contracts.ClientDocuments;
 using Accounting.Api.Contracts.Testimonials;
@@ -55,10 +56,12 @@ namespace Accounting.Api.Controllers
         }
 
         [HttpGet("client-requests")]
-        public async Task<ActionResult<IReadOnlyList<ClientRequestDto>>> MyClientRequests(
-      CancellationToken ct)
+        public async Task<ActionResult<PagedResult<ClientRequestDto>>> MyClientRequests(
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = Pagination.DefaultPageSize,
+            CancellationToken ct = default)
         {
-            var requests = await _mediator.Send(new ListMyClientRequestsQuery(), ct);
+            var requests = await _mediator.Send(new ListMyClientRequestsQuery(page, pageSize), ct);
 
             return Ok(requests);
         }
@@ -75,28 +78,32 @@ namespace Accounting.Api.Controllers
         }
 
         [HttpGet("subscriptions")]
-        [ProducesResponseType(typeof(IReadOnlyList<ClientSubscriptionDto>), StatusCodes.Status200OK)]
-        public async Task<ActionResult<IReadOnlyList<ClientSubscriptionDto>>> MySubscriptions(
-            CancellationToken ct)
+        [ProducesResponseType(typeof(PagedResult<ClientSubscriptionDto>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<PagedResult<ClientSubscriptionDto>>> MySubscriptions(
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = Pagination.DefaultPageSize,
+            CancellationToken ct = default)
         {
             // Id підставляємо з токена, а не з запиту — інакше клієнт міг би
             // попросити чужі дані, просто змінивши параметр.
             var subscriptions = await _mediator.Send(
-                new ListClientSubscriptionsQuery(CurrentUserId(), Status: null), ct);
+                new ListClientSubscriptionsQuery(CurrentUserId(), Status: null, page, pageSize), ct);
 
             return Ok(subscriptions);
         }
 
         [HttpGet("documents")]
-        [ProducesResponseType(typeof(IReadOnlyList<ClientDocumentDto>), StatusCodes.Status200OK)]
-        public async Task<ActionResult<IReadOnlyList<ClientDocumentDto>>> MyDocuments(
+        [ProducesResponseType(typeof(PagedResult<ClientDocumentDto>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<PagedResult<ClientDocumentDto>>> MyDocuments(
             [FromQuery] ClientDocumentCategory? category,
             [FromQuery] ClientDocumentDirection? direction,
             [FromQuery] ClientDocumentStatus? status,
-            CancellationToken ct)
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = Pagination.DefaultPageSize,
+            CancellationToken ct = default)
         {
             var documents = await _mediator.Send(
-                new ListDocumentsQuery(CurrentUserId(), category, direction, status), ct);
+                new ListDocumentsQuery(CurrentUserId(), category, direction, status, page, pageSize), ct);
 
             return Ok(documents);
         }

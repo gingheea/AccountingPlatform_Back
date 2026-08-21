@@ -43,12 +43,14 @@ namespace Accounting.Api.Controllers
         /// <summary>Усі відгуки з їхнім станом — для розгляду в адмінці.</summary>
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        [ProducesResponseType(typeof(IReadOnlyList<TestimonialDto>), StatusCodes.Status200OK)]
-        public async Task<ActionResult<IReadOnlyList<TestimonialDto>>> List(
+        [ProducesResponseType(typeof(PagedResult<TestimonialDto>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<PagedResult<TestimonialDto>>> List(
             [FromQuery] TestimonialStatus? status,
-            CancellationToken ct)
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = Pagination.DefaultPageSize,
+            CancellationToken ct = default)
         {
-            var testimonials = await _mediator.Send(new ListTestimonialsQuery(status), ct);
+            var testimonials = await _mediator.Send(new ListTestimonialsQuery(status, page, pageSize), ct);
 
             return Ok(testimonials);
         }

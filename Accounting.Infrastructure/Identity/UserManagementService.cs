@@ -1,4 +1,5 @@
 ﻿using Accounting.Application.Abstractions.Identity;
+using Accounting.Application.Common;
 using Accounting.Application.Common.Errors;
 using Accounting.Application.Features.Portal.Common;
 using Accounting.Application.Features.Users.Common;
@@ -20,14 +21,50 @@ public sealed class UserManagementService : IUserManagementService
         _roleManager = roleManager;
     }
 
-    public async Task<IReadOnlyList<UserDto>> ListAsync(CancellationToken ct)
+    public async Task<PagedResult<UserDto>> ListAsync(
+        string? search,
+        bool? isActive,
+        int page,
+        int pageSize,
+        CancellationToken ct)
     {
-        var users = await _userManager.Users
-            .OrderBy(x => x.CreatedAt)
+        page = Pagination.NormalizePage(page);
+        pageSize = Pagination.NormalizePageSize(pageSize);
+
+        var query = _userManager.Users.AsNoTracking();
+
+        if (isActive is not null)
+            query = query.Where(x => x.IsActive == isActive.Value);
+
+        search = search?.Trim();
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            // ILike — пошук без урахування регістру засобами Postgres.
+            // EF.Functions.Like з ToLower() дав би те саме, але змусив би базу
+            // перебрати всі рядки, застосовуючи ToLower до кожного.
+            var pattern = $"%{search}%";
+
+            query = query.Where(x =>
+                EF.Functions.ILike(x.FullName ?? string.Empty, pattern) ||
+                EF.Functions.ILike(x.Email ?? string.Empty, pattern) ||
+                EF.Functions.ILike(x.TaxId ?? string.Empty, pattern));
+        }
+
+        var total = await query.CountAsync(ct);
+
+        var users = await query
+            .OrderByDescending(x => x.CreatedAt)
+            .ThenBy(x => x.Id)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync(ct);
 
-        var result = new List<UserDto>();
+        var result = new List<UserDto>(users.Count);
 
+        // Ролі Identity вміє віддавати лише по одному користувачу за раз, тож це
+        // запит на кожного. Раніше так перебирались геть усі користувачі; тепер —
+        // лише ті, що на поточній сторінці.
         foreach (var user in users)
         {
             var roles = await _userManager.GetRolesAsync(user);
@@ -43,7 +80,7 @@ public sealed class UserManagementService : IUserManagementService
             ));
         }
 
-        return result;
+        return new PagedResult<UserDto>(result, total);
     }
 
     public async Task<UserDto?> GetByIdAsync(Guid id, CancellationToken ct)

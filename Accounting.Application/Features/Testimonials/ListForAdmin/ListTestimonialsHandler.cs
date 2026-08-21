@@ -1,8 +1,8 @@
 using Accounting.Application.Abstractions.Persistence;
+using Accounting.Application.Common;
 using Accounting.Application.Features.Testimonials.Common;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Accounting.Application.Features.Testimonials.ListForAdmin
 {
     public sealed class ListTestimonialsHandler
-        : IRequestHandler<ListTestimonialsQuery, IReadOnlyList<TestimonialDto>>
+        : IRequestHandler<ListTestimonialsQuery, PagedResult<TestimonialDto>>
     {
         private readonly ITestimonialRepository _repository;
 
@@ -19,7 +19,7 @@ namespace Accounting.Application.Features.Testimonials.ListForAdmin
             _repository = repository;
         }
 
-        public async Task<IReadOnlyList<TestimonialDto>> Handle(
+        public async Task<PagedResult<TestimonialDto>> Handle(
             ListTestimonialsQuery request,
             CancellationToken ct)
         {
@@ -31,17 +31,21 @@ namespace Accounting.Application.Features.Testimonials.ListForAdmin
             // Найновіші зверху: бухгалтер відкриває список, щоб розглянути свіже.
             return await query
                 .OrderByDescending(x => x.CreatedAtUtc)
-                .Select(x => new TestimonialDto(
-                    x.Id,
-                    x.UserId,
-                    x.AuthorName,
-                    x.AuthorRole,
-                    x.Content,
-                    x.Status,
-                    x.ModerationNote,
-                    x.CreatedAtUtc,
-                    x.ModeratedAtUtc))
-                .ToListAsync(ct);
+                .ThenBy(x => x.Id)
+                .ToPagedResultAsync(
+                    q => q.Select(x => new TestimonialDto(
+                        x.Id,
+                        x.UserId,
+                        x.AuthorName,
+                        x.AuthorRole,
+                        x.Content,
+                        x.Status,
+                        x.ModerationNote,
+                        x.CreatedAtUtc,
+                        x.ModeratedAtUtc)),
+                    request.Page,
+                    request.PageSize,
+                    ct);
         }
     }
 }

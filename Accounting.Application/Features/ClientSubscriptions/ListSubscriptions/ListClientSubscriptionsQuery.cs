@@ -1,8 +1,8 @@
+using Accounting.Application.Common;
 using Accounting.Application.Features.ClientSubscriptions.Common;
 using Accounting.Domain.Enums;
 using MediatR;
 using System;
-using System.Collections.Generic;
 
 namespace Accounting.Application.Features.ClientSubscriptions.ListSubscriptions
 {
@@ -12,6 +12,8 @@ namespace Accounting.Application.Features.ClientSubscriptions.ListSubscriptions
     /// </param>
     public sealed record ListClientSubscriptionsQuery(
         Guid? UserId,
-        SubscriptionStatus? Status
-    ) : IRequest<IReadOnlyList<ClientSubscriptionDto>>;
+        SubscriptionStatus? Status,
+        int Page,
+        int PageSize
+    ) : IRequest<PagedResult<ClientSubscriptionDto>>;
 }

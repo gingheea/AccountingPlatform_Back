@@ -1,3 +1,4 @@
+using Accounting.Application.Common;
 using Accounting.Api.Contracts.ClientSubscriptions;
 using Accounting.Application.Features.ClientSubscriptions.ChangeStatus;
 using Accounting.Application.Features.ClientSubscriptions.Common;
@@ -28,13 +29,16 @@ namespace Accounting.Api.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(IReadOnlyList<ClientSubscriptionDto>), StatusCodes.Status200OK)]
-        public async Task<ActionResult<IReadOnlyList<ClientSubscriptionDto>>> List(
+        [ProducesResponseType(typeof(PagedResult<ClientSubscriptionDto>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<PagedResult<ClientSubscriptionDto>>> List(
             [FromQuery] Guid? userId,
             [FromQuery] SubscriptionStatus? status,
-            CancellationToken ct)
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = Pagination.DefaultPageSize,
+            CancellationToken ct = default)
         {
-            var subscriptions = await _mediator.Send(new ListClientSubscriptionsQuery(userId, status), ct);
+            var subscriptions = await _mediator.Send(
+                new ListClientSubscriptionsQuery(userId, status, page, pageSize), ct);
 
             return Ok(subscriptions);
         }

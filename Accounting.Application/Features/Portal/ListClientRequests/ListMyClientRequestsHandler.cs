@@ -1,21 +1,20 @@
-﻿using Accounting.Application.Abstractions.Identity;
+using Accounting.Application.Abstractions.Identity;
 using Accounting.Application.Abstractions.Persistence;
+using Accounting.Application.Common;
 using Accounting.Application.Features.ClientRequests.Common;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Accounting.Application.Features.Portal.ListClientRequests
 {
-
     public sealed class ListMyClientRequestsHandler
-     : IRequestHandler<ListMyClientRequestsQuery, IReadOnlyList<ClientRequestDto>>
+        : IRequestHandler<ListMyClientRequestsQuery, PagedResult<ClientRequestDto>>
     {
         private readonly ICurrentUserService _currentUserService;
         private readonly IClientRequestRepository _repository;
@@ -31,9 +30,9 @@ namespace Accounting.Application.Features.Portal.ListClientRequests
             _mapper = mapper;
         }
 
-        public async Task<IReadOnlyList<ClientRequestDto>> Handle(
+        public async Task<PagedResult<ClientRequestDto>> Handle(
             ListMyClientRequestsQuery request,
-            CancellationToken cancellationToken)
+            CancellationToken ct)
         {
             var userId = _currentUserService.UserId;
 
@@ -43,10 +42,16 @@ namespace Accounting.Application.Features.Portal.ListClientRequests
             return await _repository
                 .Query()
                 .AsNoTracking()
+                // Фільтр за власником стоїть до посторінковості: інакше клієнт
+                // побачив би чужі заявки, просто попросивши іншу сторінку.
                 .Where(x => x.UserId == userId.Value)
                 .OrderByDescending(x => x.CreatedAtUtc)
-                .ProjectTo<ClientRequestDto>(_mapper.ConfigurationProvider)
-                .ToListAsync(cancellationToken);
+                .ThenBy(x => x.Id)
+                .ToPagedResultAsync(
+                    q => q.ProjectTo<ClientRequestDto>(_mapper.ConfigurationProvider),
+                    request.Page,
+                    request.PageSize,
+                    ct);
         }
     }
 }

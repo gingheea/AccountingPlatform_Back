@@ -1,4 +1,5 @@
 using Accounting.Application.Abstractions.Persistence;
+using Accounting.Application.Common;
 using Accounting.Application.Features.ClientSubscriptions.Common;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 namespace Accounting.Application.Features.ClientSubscriptions.ListSubscriptions
 {
     public sealed class ListClientSubscriptionsHandler
-        : IRequestHandler<ListClientSubscriptionsQuery, IReadOnlyList<ClientSubscriptionDto>>
+        : IRequestHandler<ListClientSubscriptionsQuery, PagedResult<ClientSubscriptionDto>>
     {
         private readonly IClientSubscriptionRepository _repository;
         private readonly IServiceRepository _serviceRepository;
@@ -27,7 +28,7 @@ namespace Accounting.Application.Features.ClientSubscriptions.ListSubscriptions
             _pricingPackageRepository = pricingPackageRepository;
         }
 
-        public async Task<IReadOnlyList<ClientSubscriptionDto>> Handle(
+        public async Task<PagedResult<ClientSubscriptionDto>> Handle(
             ListClientSubscriptionsQuery request,
             CancellationToken ct)
         {
@@ -39,12 +40,24 @@ namespace Accounting.Application.Features.ClientSubscriptions.ListSubscriptions
             if (request.Status is not null)
                 query = query.Where(x => x.Status == request.Status.Value);
 
+            var page = Pagination.NormalizePage(request.Page);
+            var pageSize = Pagination.NormalizePageSize(request.PageSize);
+
+            var total = await query.CountAsync(ct);
+
+            // Спершу відрізаємо сторінку, і лише потім тягнемо назви. Раніше
+            // сюди завантажувались усі записи одразу — саме тому цей обробник
+            // не вкладається в спільний помічник: назви підставляються вже
+            // після вибірки, в памʼяті.
             var subscriptions = await query
                 .OrderByDescending(x => x.StartedAtUtc)
+                .ThenBy(x => x.Id)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync(ct);
 
             if (subscriptions.Count == 0)
-                return Array.Empty<ClientSubscriptionDto>();
+                return new PagedResult<ClientSubscriptionDto>(Array.Empty<ClientSubscriptionDto>(), total);
 
             // Назви тягнемо двома окремими запитами, а не join'ом: так читабельніше,
             // і на цих обсягах різниці в швидкості немає.
@@ -72,7 +85,7 @@ namespace Accounting.Application.Features.ClientSubscriptions.ListSubscriptions
                     .Where(x => packageIds.Contains(x.Id))
                     .ToDictionaryAsync(x => x.Id, x => x.Name, ct);
 
-            return subscriptions
+            var items = subscriptions
                 .Select(x => new ClientSubscriptionDto(
                     x.Id,
                     x.UserId,
@@ -87,6 +100,8 @@ namespace Accounting.Application.Features.ClientSubscriptions.ListSubscriptions
                     x.CreatedAtUtc,
                     x.UpdatedAtUtc))
                 .ToList();
+
+            return new PagedResult<ClientSubscriptionDto>(items, total);
         }
     }
 }

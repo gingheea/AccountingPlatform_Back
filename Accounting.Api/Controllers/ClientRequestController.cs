@@ -1,4 +1,5 @@
-﻿using Accounting.Api.Common;
+﻿using Accounting.Application.Common;
+using Accounting.Api.Common;
 using Accounting.Api.Contracts.ClientRequests;
 using Accounting.Application.Features.ClientRequests.AssignClientRequestToUser;
 using Accounting.Application.Features.ClientRequests.ChangeAdminNote;
@@ -34,11 +35,16 @@ namespace Accounting.Api.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        [ProducesResponseType(typeof(IReadOnlyList<ClientRequestDto>), StatusCodes.Status200OK)]
-        public async Task<ActionResult<IReadOnlyList<ClientRequestDto>>> List(CancellationToken ct)
+        [ProducesResponseType(typeof(PagedResult<ClientRequestDto>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<PagedResult<ClientRequestDto>>> List(
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = Pagination.DefaultPageSize,
+            CancellationToken ct = default)
         {
-            _logger.LogDebug("Listing client requests");
-            var clientRequests = await _mediator.Send(new ListClientRequestsQuery(), ct);
+            _logger.LogDebug("Listing client requests, page {Page}", page);
+
+            var clientRequests = await _mediator.Send(new ListClientRequestsQuery(page, pageSize), ct);
+
             return Ok(clientRequests);
         }
 

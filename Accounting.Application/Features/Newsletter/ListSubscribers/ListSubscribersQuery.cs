@@ -1,6 +1,6 @@
+using Accounting.Application.Common;
 using MediatR;
 using System;
-using System.Collections.Generic;
 
 namespace Accounting.Application.Features.Newsletter.ListSubscribers
 {
@@ -13,6 +13,6 @@ namespace Accounting.Application.Features.Newsletter.ListSubscribers
         DateTime? UnsubscribedAtUtc
     );
 
-    public sealed record ListSubscribersQuery(bool? IsActive)
-        : IRequest<IReadOnlyList<NewsletterSubscriberDto>>;
+    public sealed record ListSubscribersQuery(bool? IsActive, int Page, int PageSize)
+        : IRequest<PagedResult<NewsletterSubscriberDto>>;
 }

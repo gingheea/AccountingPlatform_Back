@@ -1,4 +1,5 @@
-﻿using Accounting.Application.Features.Portal.Common;
+﻿using Accounting.Application.Common;
+using Accounting.Application.Features.Portal.Common;
 using Accounting.Application.Features.Users.Common;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,12 @@ namespace Accounting.Application.Abstractions.Identity
 {
     public interface IUserManagementService
     {
-        Task<IReadOnlyList<UserDto>> ListAsync(CancellationToken ct);
+        Task<PagedResult<UserDto>> ListAsync(
+            string? search,
+            bool? isActive,
+            int page,
+            int pageSize,
+            CancellationToken ct);
 
         Task<UserDto?> GetByIdAsync(Guid id, CancellationToken ct);
 

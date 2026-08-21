@@ -1,7 +1,7 @@
 using Accounting.Application.Abstractions.Persistence;
+using Accounting.Application.Common;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Accounting.Application.Features.Newsletter.ListSubscribers
 {
     public sealed class ListSubscribersHandler
-        : IRequestHandler<ListSubscribersQuery, IReadOnlyList<NewsletterSubscriberDto>>
+        : IRequestHandler<ListSubscribersQuery, PagedResult<NewsletterSubscriberDto>>
     {
         private readonly INewsletterSubscriberRepository _repository;
 
@@ -18,7 +18,7 @@ namespace Accounting.Application.Features.Newsletter.ListSubscribers
             _repository = repository;
         }
 
-        public async Task<IReadOnlyList<NewsletterSubscriberDto>> Handle(
+        public async Task<PagedResult<NewsletterSubscriberDto>> Handle(
             ListSubscribersQuery request,
             CancellationToken ct)
         {
@@ -29,9 +29,13 @@ namespace Accounting.Application.Features.Newsletter.ListSubscribers
 
             return await query
                 .OrderByDescending(x => x.SubscribedAtUtc)
-                .Select(x => new NewsletterSubscriberDto(
-                    x.Id, x.Email, x.Source, x.IsActive, x.SubscribedAtUtc, x.UnsubscribedAtUtc))
-                .ToListAsync(ct);
+                .ThenBy(x => x.Id)
+                .ToPagedResultAsync(
+                    q => q.Select(x => new NewsletterSubscriberDto(
+                        x.Id, x.Email, x.Source, x.IsActive, x.SubscribedAtUtc, x.UnsubscribedAtUtc)),
+                    request.Page,
+                    request.PageSize,
+                    ct);
         }
     }
 }

@@ -1,8 +1,8 @@
+using Accounting.Application.Common;
 using Accounting.Application.Features.ClientDocuments.Common;
 using Accounting.Domain.Enums;
 using MediatR;
 using System;
-using System.Collections.Generic;
 
 namespace Accounting.Application.Features.ClientDocuments.ListDocuments
 {
@@ -14,6 +14,8 @@ namespace Accounting.Application.Features.ClientDocuments.ListDocuments
         Guid? UserId,
         ClientDocumentCategory? Category,
         ClientDocumentDirection? Direction,
-        ClientDocumentStatus? Status
-    ) : IRequest<IReadOnlyList<ClientDocumentDto>>;
+        ClientDocumentStatus? Status,
+        int Page,
+        int PageSize
+    ) : IRequest<PagedResult<ClientDocumentDto>>;
 }

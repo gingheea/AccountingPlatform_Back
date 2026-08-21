@@ -1,15 +1,13 @@
-﻿using Accounting.Application.Abstractions.Identity;
+using Accounting.Application.Abstractions.Identity;
+using Accounting.Application.Common;
 using Accounting.Application.Features.Users.Common;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Accounting.Application.Features.Users.GetUsers
 {
-    public sealed class GetUsersHandler : IRequestHandler<GetUsersQuery, IReadOnlyList<UserDto>>
+    public sealed class GetUsersHandler : IRequestHandler<GetUsersQuery, PagedResult<UserDto>>
     {
         private readonly IUserManagementService _userManagementService;
 
@@ -18,9 +16,14 @@ namespace Accounting.Application.Features.Users.GetUsers
             _userManagementService = userManagementService;
         }
 
-        public async Task<IReadOnlyList<UserDto>> Handle(GetUsersQuery request, CancellationToken cancellationToken)
+        public async Task<PagedResult<UserDto>> Handle(GetUsersQuery request, CancellationToken ct)
         {
-            return await _userManagementService.ListAsync(cancellationToken);
+            return await _userManagementService.ListAsync(
+                request.Search,
+                request.IsActive,
+                request.Page,
+                request.PageSize,
+                ct);
         }
     }
 }

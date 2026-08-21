@@ -1,4 +1,5 @@
-﻿using Accounting.Api.Contracts.Identity;
+﻿using Accounting.Application.Common;
+using Accounting.Api.Contracts.Identity;
 using Accounting.Application.Features.Users.ActivateUser;
 using Accounting.Application.Features.Users.ChangeRolesForUser;
 using Accounting.Application.Features.Users.Common;
@@ -28,10 +29,19 @@ namespace Accounting.Api.Controllers.Identity
 
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<IReadOnlyList<UserDto>>> List(CancellationToken ct)
+        [ProducesResponseType(typeof(PagedResult<UserDto>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<PagedResult<UserDto>>> List(
+            [FromQuery] string? search,
+            [FromQuery] bool? isActive,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = Pagination.DefaultPageSize,
+            CancellationToken ct = default)
         {
-            _logger.LogDebug("Listing users");
-            var users = await _mediator.Send(new GetUsersQuery(), ct);
+            _logger.LogDebug("Listing users, page {Page}", page);
+
+            var users = await _mediator.Send(
+                new GetUsersQuery(search, isActive, page, pageSize), ct);
+
             return Ok(users);
         }
 

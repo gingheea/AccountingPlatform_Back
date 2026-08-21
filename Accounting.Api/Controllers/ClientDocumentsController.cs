@@ -1,3 +1,4 @@
+using Accounting.Application.Common;
 using Accounting.Api.Contracts.ClientDocuments;
 using Accounting.Application.Features.ClientDocuments.ChangeStatus;
 using Accounting.Application.Features.ClientDocuments.Common;
@@ -29,16 +30,18 @@ namespace Accounting.Api.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(IReadOnlyList<ClientDocumentDto>), StatusCodes.Status200OK)]
-        public async Task<ActionResult<IReadOnlyList<ClientDocumentDto>>> List(
+        [ProducesResponseType(typeof(PagedResult<ClientDocumentDto>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<PagedResult<ClientDocumentDto>>> List(
             [FromQuery] Guid? userId,
             [FromQuery] ClientDocumentCategory? category,
             [FromQuery] ClientDocumentDirection? direction,
             [FromQuery] ClientDocumentStatus? status,
-            CancellationToken ct)
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = Pagination.DefaultPageSize,
+            CancellationToken ct = default)
         {
             var documents = await _mediator.Send(
-                new ListDocumentsQuery(userId, category, direction, status), ct);
+                new ListDocumentsQuery(userId, category, direction, status, page, pageSize), ct);
 
             return Ok(documents);
         }

@@ -1,10 +1,10 @@
 using Accounting.Application.Abstractions.Persistence;
+using Accounting.Application.Common;
 using Accounting.Application.Features.ClientDocuments.Common;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Accounting.Application.Features.ClientDocuments.ListDocuments
 {
     public sealed class ListDocumentsHandler
-        : IRequestHandler<ListDocumentsQuery, IReadOnlyList<ClientDocumentDto>>
+        : IRequestHandler<ListDocumentsQuery, PagedResult<ClientDocumentDto>>
     {
         private readonly IClientDocumentRepository _repository;
         private readonly IMapper _mapper;
@@ -23,7 +23,7 @@ namespace Accounting.Application.Features.ClientDocuments.ListDocuments
             _mapper = mapper;
         }
 
-        public async Task<IReadOnlyList<ClientDocumentDto>> Handle(
+        public async Task<PagedResult<ClientDocumentDto>> Handle(
             ListDocumentsQuery request,
             CancellationToken ct)
         {
@@ -43,8 +43,12 @@ namespace Accounting.Application.Features.ClientDocuments.ListDocuments
 
             return await query
                 .OrderByDescending(x => x.CreatedAtUtc)
-                .ProjectTo<ClientDocumentDto>(_mapper.ConfigurationProvider)
-                .ToListAsync(ct);
+                .ThenBy(x => x.Id)
+                .ToPagedResultAsync(
+                    q => q.ProjectTo<ClientDocumentDto>(_mapper.ConfigurationProvider),
+                    request.Page,
+                    request.PageSize,
+                    ct);
         }
     }
 }
